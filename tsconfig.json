@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "lib": ["es2020"],
+        "target": "es2017", // for top-level await
+        "strict": true,
+        "module": "esnext", // for top-level await
+        "moduleResolution": "node",
+        "esModuleInterop": true
+    }
+}
