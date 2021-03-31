@@ -31,10 +31,10 @@ const addToStore = (items: Record<string, any>): void => {
 };
 
 const handleFolder = async (treeItem: ITreeItem): Promise<void> => {
-    mkdir(useProjectRoot(treeItem.path));
+    await mkdir(useProjectRoot(treeItem.path));
 };
 
-const getThruFileValues = (thruFile: Record<string, any>): Record<string, any> => {
+const getThruFileValues = (thruFile: Record<string, any>, path: string): Record<string, any> => {
 
     const values = {
         contentItems: [] as string[],
@@ -44,11 +44,19 @@ const getThruFileValues = (thruFile: Record<string, any>): Record<string, any> =
     const resolverKeys = Object.keys(thruFile.default);
     const itemsForNext = {} as Record<string, any>;
     resolverKeys.forEach(key => {
-        const { content = '', forNext = {}, ...toStore } =
-            thruFile.default[key](thruConf, itemsForNext, store) || {};
-        content && values.contentItems.push(content);
-        forNext && Object.assign(itemsForNext, forNext);
-        toStore && Object.assign(values.itemsToStore, toStore);
+        try {
+            const { content = '', forNext = {}, ...toStore } =
+                thruFile.default[key](thruConf, itemsForNext, store) || {};
+            content && values.contentItems.push(content);
+            forNext && Object.assign(itemsForNext, forNext);
+            toStore && Object.assign(values.itemsToStore, toStore);
+        } catch (err) {
+            console.log(
+                `ERROR in method '${key}' of thru file at path: ${path}. ` + err + '. ' +
+                'Accumulated return values from file at error time in JSON format: ' +
+                JSON.stringify(values) + '.'
+            );
+        };
     });
     return values;
 };
@@ -60,8 +68,17 @@ const getDestFilePath = (treeItemPath: string): string => {
 };
 
 const handleThruFile = async (treeItem: ITreeItem): Promise<void> => {
-    const thruFile = await import(path.resolve(treeItem.path));
-    const { contentItems, itemsToStore } = getThruFileValues(thruFile);
+    let thruFile;
+    try {
+        thruFile = await import(path.resolve(treeItem.path));
+    } catch (err) {
+        console.log(
+            `ERROR importing thru file at path: ${treeItem.path}. ` + err + '. ' +
+            'Result: target file not created & no items returned for storage.'
+        );
+        return;
+    };
+    const { contentItems, itemsToStore } = getThruFileValues(thruFile, treeItem.path);
     const destFilePath = getDestFilePath(treeItem.path);
     contentItems.length > 0 && await writeFile(destFilePath, contentItems.join('\n'));
     addToStore(itemsToStore);

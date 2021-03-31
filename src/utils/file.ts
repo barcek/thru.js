@@ -14,6 +14,7 @@ const loadJSON = async <T>(JSONFilePath: string): Promise<T> => {
         const buffer = await fs.readFile(JSONFilePath);
         content = JSON.parse(buffer.toString());
     } catch (err) {
+        console.log(`NOTE: valid JSON file not found at path: ${JSONFilePath}.`);
         content = {};
     };
     return content;
