@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "tsc -w",
     "build": "tsc"
   },
   "keywords": [
