@@ -5,6 +5,8 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 
+import { ITreeItem } from '../types/index.js';
+
 /*
     File utils
 */

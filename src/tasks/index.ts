@@ -120,10 +120,10 @@ const handleTreeItems = async (treeItems: ITreeItem[]): Promise<void> => {
     const { folders, files } = separateTreeItems(treeItems);
     for (let folder of folders) {
         await handleFolder(folder);
-    });
+    };
     for (let file of files) {
         await handleFile(file);
-    });
+    };
 };
 
 /*
