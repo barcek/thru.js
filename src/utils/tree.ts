@@ -2,33 +2,31 @@
     Imports
 */
 
-import path from 'path';
-import { promises as fs } from 'fs';
-
 import { ITreeItem } from '../types/index.js';
 
 /*
     Tree utils
 */
 
-const readTree = async (root: string, treeItems: Array<ITreeItem> = []): Promise<ITreeItem[]> => {
+const reduceTree:
 
-    const dirItems = await fs.readdir(root, { withFileTypes: true });
+    (reducer: (acc: any, treeItem: ITreeItem) => any) =>
+    (initial: any) =>
+    (treeItems: Array<ITreeItem>) => any
 
-    treeItems = dirItems.map(dirItem => {
-        return {
-            path: path.join(root, dirItem.name),
-            type: dirItem.isDirectory() ? 'folder' : 'file'
+    = reducer => initial => treeItems => {
+
+    return treeItems.reduce((acc, treeItem) => {
+
+        acc = reducer(acc, treeItem)
+
+        if (!treeItem.dir || treeItem.dir.length === 0) {
+            return acc;
         };
-    });
 
-    for (let treeItem of treeItems) {
-        if (treeItem.type === 'folder') {
-            treeItem.dir = await readTree(treeItem.path);
-        };
-    };
+        return reduceTree(reducer)(acc)(treeItem.dir);
 
-    return treeItems;
+    }, initial);
 };
 
 /*
@@ -36,5 +34,5 @@ const readTree = async (root: string, treeItems: Array<ITreeItem> = []): Promise
 */
 
 export {
-    readTree
+    reduceTree
 };

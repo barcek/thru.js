@@ -2,15 +2,16 @@
     Imports
 */
 
-import { loadJSON, mkdir, writeFile, copyFile } from './file.js';
+import { readTree, loadJSON, mkdir, writeFile, copyFile } from './file.js';
 import { switchRoot, removeBaseInfix, removeExt } from './path.js';
-import { readTree } from './tree.js';
+import { reduceTree } from './tree.js';
 
 /*
     Exports
 */
 
 export {
+    readTree,
     loadJSON,
     mkdir,
     writeFile,
@@ -18,5 +19,5 @@ export {
     switchRoot,
     removeBaseInfix,
     removeExt,
-    readTree
+    reduceTree
 };

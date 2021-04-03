@@ -6,7 +6,7 @@ import path from 'path';
 
 import { thruRootPath, projectRootPath, thruConf, thruFileInfix } from '../confs/index.js';
 import { ITreeItem } from '../types/index.js';
-import { mkdir, writeFile, copyFile, switchRoot, removeBaseInfix, removeExt, readTree } from '../utils/index.js';
+import { mkdir, writeFile, copyFile, switchRoot, removeBaseInfix, removeExt, reduceTree, readTree } from '../utils/index.js';
 
 /*
     Constants
@@ -15,7 +15,7 @@ import { mkdir, writeFile, copyFile, switchRoot, removeBaseInfix, removeExt, rea
 const store = {} as Record<string, any>;
 
 /*
-    Subtasks
+    Subtasks - for store
 */
 
 const runStoredTasks = (): void => {
@@ -30,9 +30,9 @@ const addToStore = (items: Record<string, any>): void => {
     Object.assign(store, items);
 };
 
-const handleFolder = async (treeItem: ITreeItem): Promise<void> => {
-    await mkdir(useProjectRoot(treeItem.path));
-};
+/*
+    Subtasks - for thru files
+*/
 
 const getThruFileValues = (thruFile: Record<string, any>, path: string): Record<string, any> => {
 
@@ -62,6 +62,7 @@ const getThruFileValues = (thruFile: Record<string, any>, path: string): Record<
 };
 
 const removeThruInfix = removeBaseInfix(thruFileInfix);
+
 const useProjectRoot = switchRoot(thruRootPath)(projectRootPath);
 
 const getDestFilePath = (treeItemPath: string): string => {
@@ -85,26 +86,44 @@ const handleThruFile = async (treeItem: ITreeItem): Promise<void> => {
     addToStore(itemsToStore);
 };
 
-const handleElseFile = async (treeItem: ITreeItem): Promise<void> => {
+/*
+    Subtasks - for other files & folders
+*/
+
+const handleFolder = async (treeItem: ITreeItem): Promise<void> => {
+    await mkdir(useProjectRoot(treeItem.path));
+};
+
+const handleNonThruFile = async (treeItem: ITreeItem): Promise<void> => {
     await copyFile(treeItem.path, useProjectRoot(treeItem.path));
 };
 
 const handleFile = async (treeItem: ITreeItem): Promise<void> => {
     path.basename(treeItem.path).includes(thruFileInfix)
         ? await handleThruFile(treeItem)
-        : await handleElseFile(treeItem);
+        : await handleNonThruFile(treeItem);
 };
 
+/*
+    Subtasks - for all tree items
+*/
+
+const assignTreeItem = (acc: Record<string, Array<ITreeItem>>, treeItem: ITreeItem): Record<string, Array<ITreeItem>> => {
+    treeItem.type === 'folder' && acc.folders.push(treeItem);
+    treeItem.type === 'file' && acc.files.push(treeItem);
+    return acc;
+};
+
+const separateTreeItems = reduceTree(assignTreeItem)({ folders: [], files: [] });
+
 const handleTreeItems = async (treeItems: ITreeItem[]): Promise<void> => {
-    for (let treeItem of treeItems) {
-        if (treeItem.type === 'folder') {
-            await handleFolder(treeItem);
-            await handleTreeItems(treeItem.dir as ITreeItem[]);
-        };
-        if (treeItem.type === 'file') {
-            await handleFile(treeItem);
-        };
-    };
+    const { folders, files } = separateTreeItems(treeItems);
+    for (let folder of folders) {
+        await handleFolder(folder);
+    });
+    for (let file of files) {
+        await handleFile(file);
+    });
 };
 
 /*
