@@ -61,10 +61,11 @@ const getThruFileValues = (thruFile: Record<string, any>, path: string): Record<
     return values;
 };
 
-const useProjectRoot = switchRoot(thruRootPath, projectRootPath);
+const removeThruInfix = removeBaseInfix(thruFileInfix);
+const useProjectRoot = switchRoot(thruRootPath)(projectRootPath);
 
 const getDestFilePath = (treeItemPath: string): string => {
-    return useProjectRoot(removeExt(removeBaseInfix(treeItemPath, thruFileInfix)));
+    return useProjectRoot(removeExt(removeThruInfix(treeItemPath)));
 };
 
 const handleThruFile = async (treeItem: ITreeItem): Promise<void> => {

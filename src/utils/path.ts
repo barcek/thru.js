@@ -8,13 +8,15 @@ import path from 'path';
     Path utils
 */
 
-const switchRoot: (extantRoot: string, targetRoot: string) => (itemPath: string) => string = (extantRoot, targetRoot) => {
+const switchRoot: (extantRoot: string) => (targetRoot: string) => (itemPath: string) => string
+    = (extantRoot) => (targetRoot) => {
     return (itemPath) => {
         return path.normalize(itemPath.replace(extantRoot, targetRoot));
     };
 };
 
-const removeBaseInfix = (filePath: string, infix: string): string => {
+const removeBaseInfix: (infix: string) => (filePath: string) => string
+    = (infix) => (filePath) => {
     const { dir, base } = path.parse(filePath);
     return path.join(dir, base.replace(infix, ''));
 };
