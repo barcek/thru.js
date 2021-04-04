@@ -29,10 +29,28 @@ const reduceTree:
     }, initial);
 };
 
+const handleTree:
+
+    (handler: (treeItem: ITreeItem) => void) =>
+    (treeItems: Array<ITreeItem>) => void
+
+    = handler => treeItems => {
+
+    treeItems.forEach(treeItem => {
+
+        handler(treeItem);
+
+        if (treeItem.dir && treeItem.dir.length > 0) {
+            handleTree(handler)(treeItem.dir);
+        };
+    });
+};
+
 /*
     Exports
 */
 
 export {
-    reduceTree
+    reduceTree,
+    handleTree
 };

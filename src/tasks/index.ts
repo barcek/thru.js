@@ -6,7 +6,7 @@ import path from 'path';
 
 import { thruRootPath, projectRootPath, thruConf, thruFileInfix } from '../confs/index.js';
 import { ITreeItem } from '../types/index.js';
-import { mkdir, writeFile, copyFile, switchRoot, removeBaseInfix, removeExt, reduceTree, readTree } from '../utils/index.js';
+import { readTree, mkdir, writeFile, copyFile, switchRoot, removeBaseInfix, removeExt, reduceTree, handleTree } from '../utils/index.js';
 
 /*
     Constants
@@ -95,7 +95,8 @@ const handleFolder = async (treeItem: ITreeItem): Promise<void> => {
 };
 
 const handleNonThruFile = async (treeItem: ITreeItem): Promise<void> => {
-    await copyFile(treeItem.path, useProjectRoot(treeItem.path));
+    const destFilePath = useProjectRoot(treeItem.path);
+    await copyFile(treeItem.path, destFilePath);
 };
 
 const handleFile = async (treeItem: ITreeItem): Promise<void> => {
@@ -108,23 +109,20 @@ const handleFile = async (treeItem: ITreeItem): Promise<void> => {
     Subtasks - for all tree items
 */
 
-const assignTreeItem = (acc: Record<string, Array<ITreeItem>>, treeItem: ITreeItem): Record<string, Array<ITreeItem>> => {
-    treeItem.type === 'folder' && acc.folders.push(treeItem);
-    treeItem.type === 'file' && acc.files.push(treeItem);
-    return acc;
+//const assignTreeItem = (acc: Record<string, Array<ITreeItem>>, treeItem: ITreeItem): Record<string, Array<ITreeItem>> => {
+//    treeItem.type === 'folder' && acc.folders.push(treeItem);
+//    treeItem.type === 'file' && acc.files.push(treeItem);
+//    return acc;
+//};
+//
+//const separateTreeItems = reduceTree(assignTreeItem)({ folders: [], files: [] });
+
+const handleTreeItem = async (treeItem: ITreeItem): Promise<void> => {
+    treeItem.type === 'folder' && await handleFolder(treeItem);
+    treeItem.type === 'file' && await handleFile(treeItem);
 };
 
-const separateTreeItems = reduceTree(assignTreeItem)({ folders: [], files: [] });
-
-const handleTreeItems = async (treeItems: ITreeItem[]): Promise<void> => {
-    const { folders, files } = separateTreeItems(treeItems);
-    for (let folder of folders) {
-        await handleFolder(folder);
-    };
-    for (let file of files) {
-        await handleFile(file);
-    };
-};
+const handleTreeItems = handleTree(handleTreeItem);
 
 /*
     Tasks
