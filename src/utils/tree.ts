@@ -32,18 +32,18 @@ const reduceTree:
 const handleTree:
 
     (handler: (treeItem: ITreeItem) => void) =>
-    (treeItems: Array<ITreeItem>) => void
+    (treeItems: Array<ITreeItem>) => Promise<void>
 
-    = handler => treeItems => {
+    = handler => async treeItems => {
 
-    treeItems.forEach(treeItem => {
+    for (let treeItem of treeItems) {
 
-        handler(treeItem);
+        await handler(treeItem);
 
         if (treeItem.dir && treeItem.dir.length > 0) {
-            handleTree(handler)(treeItem.dir);
+            await handleTree(handler)(treeItem.dir);
         };
-    });
+    };
 };
 
 /*
