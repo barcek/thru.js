@@ -23,7 +23,7 @@ const runStoredTasks = async (): Promise<void> => {
     for (let key in storeKeys) {
         key.includes('Task') && typeof store[key] === 'function'
             && await store[key](thruConf, store);
-    });
+    };
 };
 
 const addToStore = (items: Record<string, any>): void => {
