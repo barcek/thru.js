@@ -8,6 +8,10 @@ import { ITreeItem } from '../types/index.js';
     Tree utils
 */
 
+const hasOwnDir = (treeItem: ITreeItem): boolean => {
+    return (treeItem.dir && treeItem.dir.length > 0) || false;
+};
+
 const reduceTree:
 
     (reducer: (acc: any, treeItem: ITreeItem) => any) =>
@@ -20,11 +24,11 @@ const reduceTree:
 
         acc = reducer(acc, treeItem)
 
-        if (!treeItem.dir || treeItem.dir.length === 0) {
+        if (!hasOwnDir(treeItem)) {
             return acc;
         };
 
-        return reduceTree(reducer)(acc)(treeItem.dir);
+        return reduceTree(reducer)(acc)(treeItem.dir as Array<ITreeItem>);
 
     }, initial);
 };
@@ -40,8 +44,8 @@ const handleTree:
 
         await handler(treeItem);
 
-        if (treeItem.dir && treeItem.dir.length > 0) {
-            await handleTree(handler)(treeItem.dir);
+        if (hasOwnDir(treeItem)) {
+            await handleTree(handler)(treeItem.dir as Array<ITreeItem>);
         };
     };
 };
@@ -51,6 +55,7 @@ const handleTree:
 */
 
 export {
+    hasOwnDir,
     reduceTree,
     handleTree
 };

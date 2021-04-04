@@ -4,7 +4,8 @@
 
 import { readTree, loadJSON, mkdir, writeFile, copyFile } from './file.js';
 import { switchRoot, removeBaseInfix, removeExt } from './path.js';
-import { reduceTree, handleTree } from './tree.js';
+import { hasOwnDir, reduceTree, handleTree } from './tree.js';
+import { confirmProceed } from './user.js';
 
 /*
     Exports
@@ -19,6 +20,8 @@ export {
     switchRoot,
     removeBaseInfix,
     removeExt,
+    hasOwnDir,
     reduceTree,
-    handleTree
+    handleTree,
+    confirmProceed
 };

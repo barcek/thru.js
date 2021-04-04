@@ -6,7 +6,7 @@ import path from 'path';
 
 import { thruRootPath, projectRootPath, thruConf, thruFileInfix } from '../confs/index.js';
 import { ITreeItem } from '../types/index.js';
-import { readTree, mkdir, writeFile, copyFile, switchRoot, removeBaseInfix, removeExt, reduceTree, handleTree } from '../utils/index.js';
+import { readTree, mkdir, writeFile, copyFile, switchRoot, removeBaseInfix, removeExt, hasOwnDir, reduceTree, handleTree } from '../utils/index.js';
 
 /*
     Constants
@@ -93,8 +93,8 @@ const handleThruFile = async (treeItem: ITreeItem): Promise<void> => {
 
 const handleFolder = async (treeItem: ITreeItem): Promise<void> => {
     const destFolderPath = useProjectRoot(treeItem.path);
-    await mkdir(destFolderPath);
-    console.log(`✓ ${treeItem.path} --> ${destFolderPath}`);
+    const isMade = await mkdir(destFolderPath, hasOwnDir(treeItem));
+    isMade && console.log(`✓ ${treeItem.path} --> ${destFolderPath}`);
 };
 
 const handleNonThruFile = async (treeItem: ITreeItem): Promise<void> => {
