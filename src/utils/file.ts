@@ -42,7 +42,7 @@ const loadJSON = async <T>(JSONFilePath: string): Promise<T> => {
 
     } catch (err) {
 
-        console.log(`NOTE: valid JSON file not found at path: ${JSONFilePath}.`);
+        console.log(`! NOTE: valid JSON file not found at path: ${JSONFilePath}.`);
         content = {};
     };
 

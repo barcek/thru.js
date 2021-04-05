@@ -52,7 +52,7 @@ const getThruFileValues = (thruFile: Record<string, any>, path: string): Record<
             toStore && Object.assign(values.itemsToStore, toStore);
         } catch (err) {
             console.log(
-                `ERROR in method '${key}' of thru file at path: ${path}. ` + err + '. ' +
+                `✕ ERROR in method '${key}' of thru file at path: ${path}. ` + err + '. ' +
                 'Accumulated return values from file at error time in JSON format: ' +
                 JSON.stringify(values) + '.'
             );
@@ -75,7 +75,7 @@ const handleThruFile = async (treeItem: ITreeItem): Promise<void> => {
         thruFile = await import(path.resolve(treeItem.path));
     } catch (err) {
         console.log(
-            `ERROR importing thru file at path: ${treeItem.path}. ` + err + '. ' +
+            `✕ ERROR importing thru file at path: ${treeItem.path}. ` + err + '. ' +
             'Result: target file not created & no items returned for storage.'
         );
         return;
