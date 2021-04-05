@@ -15,7 +15,7 @@ const switchRoot: (extantRoot: string) => (targetRoot: string) => (itemPath: str
     };
 };
 
-const removeBaseInfix: (infix: string) => (filePath: string) => string
+const removeInfix: (infix: string) => (filePath: string) => string
     = (infix) => (filePath) => {
     const { dir, base } = path.parse(filePath);
     return path.join(dir, base.replace(infix, ''));
@@ -32,6 +32,6 @@ const removeExt = (filePath: string): string => {
 
 export {
     switchRoot,
-    removeBaseInfix,
+    removeInfix,
     removeExt
 };

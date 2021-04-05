@@ -1,3 +1,3 @@
-import generate from './tasks/index.js';
+import run from './tasks/index.js';
 
-generate();
+run('generate');

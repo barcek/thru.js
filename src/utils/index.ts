@@ -3,7 +3,7 @@
 */
 
 import { readTree, loadJSON, mkdir, writeFile, copyFile } from './file.js';
-import { switchRoot, removeBaseInfix, removeExt } from './path.js';
+import { switchRoot, removeInfix, removeExt } from './path.js';
 import { hasOwnDir, reduceTree, handleTree } from './tree.js';
 import { confirmProceed } from './user.js';
 
@@ -18,7 +18,7 @@ export {
     writeFile,
     copyFile,
     switchRoot,
-    removeBaseInfix,
+    removeInfix,
     removeExt,
     hasOwnDir,
     reduceTree,
