@@ -5,10 +5,20 @@ interface ITreeItem {
 };
 
 interface IThruConf {
-    [key: string]: () => string;
+    [key: string]: any;
+};
+
+interface IThruFile {
+    [key: string]: () => any;
+};
+
+interface IThruVals {
+    [key: string]: any;
 };
 
 export {
     ITreeItem,
-    IThruConf
+    IThruConf,
+    IThruFile,
+    IThruVals
 };

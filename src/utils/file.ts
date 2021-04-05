@@ -88,12 +88,14 @@ const mkdir = async (targetFolderPath: string, hasOwnDir: boolean): Promise<bool
     };
 };
 
-const writeFile = async (targetFilePath: string, content: string): Promise<void> => {
-    fs.writeFile(targetFilePath, content);
+const writeFile = async (targetFilePath: string, content: string): Promise<boolean> => {
+    await fs.writeFile(targetFilePath, content);
+    return true;
 };
 
-const copyFile = (extantFilePath: string, targetFilePath: string): void => {
-    fs.copyFile(extantFilePath, targetFilePath);
+const copyFile = async (extantFilePath: string, targetFilePath: string): Promise<boolean> => {
+    await fs.copyFile(extantFilePath, targetFilePath);
+    return true;
 };
 
 /*
