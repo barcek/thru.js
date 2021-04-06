@@ -3,25 +3,29 @@
 */
 
 import path from 'path';
-import { promises as fs } from 'fs';
+import { promises as fs, Dirent } from 'fs';
 
 import { ITreeItem } from '../types/index.js';
-import { confirmProceed } from './index.js';
+import { quoteItems, createList, sIfMultiple, hasOwnDir, getBasenames, listContents, reduceTree, separateContents, confirmProceed } from './index.js';
 
 /*
     File utils
 */
 
-const readTree = async (root: string, treeItems: Array<ITreeItem> = []): Promise<ITreeItem[]> => {
-
-    const dirItems = await fs.readdir(root, { withFileTypes: true });
-
-    treeItems = dirItems.map(dirItem => {
+const formatAsTreeItems = (root: string, dirItems: Array<Dirent>): Array<ITreeItem> => {
+    return dirItems.map(dirItem => {
         return {
             path: path.join(root, dirItem.name),
             type: dirItem.isDirectory() ? 'folder' : 'file'
         };
     });
+};
+
+const readTree = async (root: string, treeItems: Array<ITreeItem> = []): Promise<ITreeItem[]> => {
+
+    const dirItems = await fs.readdir(root, { withFileTypes: true });
+
+    treeItems = formatAsTreeItems(root, dirItems);
 
     for (let treeItem of treeItems) {
         if (treeItem.type === 'folder') {
@@ -49,7 +53,7 @@ const loadJSON = async <T>(JSONFilePath: string): Promise<T> => {
     return content;
 };
 
-const mkdir = async (targetFolderPath: string, hasOwnDir: boolean): Promise<boolean> => {
+const mkdir = async (targetFolderPath: string, treeItem: ITreeItem): Promise<boolean> => {
 
     try {
         await fs.mkdir(targetFolderPath);
@@ -58,27 +62,34 @@ const mkdir = async (targetFolderPath: string, hasOwnDir: boolean): Promise<bool
     } catch(err) {
 
         const msgs = {
-            error: function() { return `ERROR creating folder at path: ${targetFolderPath}.`; },
-            exist: function() { return 'Folder already exists.'; },
-            check: function() {
-                return `? ${this.error()} ${this.exist()} Continue in the existing folder? ` +
-                'A file added within will overwrite any existing file with the same name. ' +
-                '(Enter y to continue or any other key to exit the generation process.) '
-            }
+            error: `ERROR creating folder at path: ${targetFolderPath}.`,
+            exist: 'Folder already exists.'
         };
 
         if (err.message.slice(0, 6) !== 'EEXIST') {
-            console.log(`✕ ${msgs.error()} ${err} Exiting.`);
+            console.log(`✕ ${msgs.error} ${err} Exiting.`);
             process.exit();
         };
-        if (!hasOwnDir) {
+
+        if (!hasOwnDir(treeItem)) {
             console.log(
-                `! ${msgs.error()} ${msgs.exist()} Note: new folder has no contents. ` +
+                `! ${msgs.error} ${msgs.exist} Note: new folder has no contents. ` +
                 'Result: existing folder retained, contents unmodified.'
             );
             return false;
         };
-        if (await confirmProceed(msgs.check())) {
+
+        const targetDirItems: Array<Dirent> = await fs.readdir(targetFolderPath, { withFileTypes: true});
+        const targetTreeItems = formatAsTreeItems(targetFolderPath, targetDirItems);
+        const question = `? ${msgs.error} ${msgs.exist} ` +
+            `${listContents('Existing folder', targetTreeItems)} ` +
+            `${listContents('New folder', treeItem.dir as Array<ITreeItem>)} ` +
+            `Continue using the existing folder? ` +
+            'A new file will overwrite an existing file with the same name. ' +
+            'NOTE: a filename with a thru infix changes before creation. ' +
+            '(Enter y to continue or any other key to exit the generation process.) '
+
+        if (await confirmProceed(question)) {
             console.log('Continuing...');
             return false;
         };
