@@ -22,8 +22,8 @@ const removeInfix: (infix: string) => (filePath: string) => string
 };
 
 const removeExt = (filePath: string): string => {
-    const { dir, base, ext } = path.parse(filePath);
-    return path.join(dir, base.replace(ext, ''));
+    const { dir, name } = path.parse(filePath);
+    return path.join(dir, name);
 };
 
 /*
