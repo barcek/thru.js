@@ -12,11 +12,15 @@ The content for each file in the tree is combined and written to the equivalent 
 
 ## Also...
 
-The `forNext` property on the returned object can be used to pass data to later methods in the same file. Any other properties on the returned object are placed on the `store` object, which is made available to later methods and later files. The `forNext` and `store` objects are the second and third arguments to each method.
+The `forNext` property on the returned object can be used to pass data to later methods in the same file.
 
-Any method placed on the `store` object with the substring 'Task' in its key will be run once after the target file tree is built.
+The `isReady` property can be set to `true` to ensure that no further methods in the given file are called, while setting `isEmpty` to `true` - or to a string to be included in the progress message - ends the calling and goes further, wiping all content returned from the file thus far. Thru files that produce no content are not represented in the target file tree.
 
-To run preliminary tasks, just use a thru file with one or more methods that return no content. Thru files that produce no content are not represented in the target file tree.
+Any other properties on the returned object are placed on the `store` object, which is made available to later methods and later files. Any method placed on the `store` object with the substring 'Task' in its key will be run once after the target file tree is built.
+
+The `forNext` and `store` objects are the second and third arguments to each method.
+
+To run preliminary tasks, just use a thru file with one or more methods that return no content. Again, thru files that produce no content are not represented in the target file tree.
 
 ## A note on exports
 
