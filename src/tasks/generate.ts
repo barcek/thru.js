@@ -45,16 +45,18 @@ const addToStore = (items: Record<string, any>): void => {
 const runThruFileMethod = (acc: IThruVals, entry: any[], path: string): IThruVals => {
     const [ key, method ] = entry;
     try {
-        const { content = '', forNext = {}, ...toStore } =
+        const { content = '', forNext = {}, isReady, isEmpty, ...toStore } =
             method(thruConf, acc.itemsForNext, store) || {};
         content && acc.contentItems.push(content);
         forNext && Object.assign(acc.itemsForNext, forNext);
         toStore && Object.assign(acc.itemsToStore, toStore);
+        isEmpty && (acc.contentItems = []) && (acc.hasCompleted = isEmpty);
+        isReady && (acc.hasCompleted = true);
     } catch (err) {
         console.log(
             `✕ ERROR in method '${key}' of thru file at path: ${path}. ` + err + '. ' +
             'Accumulated return values from file at error time in JSON format: ' +
-            JSON.stringify(acc) + '.'
+            JSON.stringify(acc, null, 2) + '.'
         );
     };
     return acc;
@@ -64,12 +66,16 @@ const getThruFileValues = (thruFile: IThruFile, path: string): IThruVals => {
     let values = {
         contentItems: [] as string[],
         itemsToStore: {} as IThruVals,
-        itemsForNext: {} as IThruVals
+        itemsForNext: {} as IThruVals,
+        hasCompleted: false as boolean
     } as IThruVals;
     const resolvers = Object.entries(thruFile.default) as Array<any[]>;
-    values = resolvers.reduce((acc: IThruVals, entry: any[]): IThruVals =>
-        runThruFileMethod(acc, entry, path)
-    , values);
+    values = resolvers.reduce((acc: IThruVals, entry: any[]): IThruVals => {
+        if (acc.hasCompleted) {
+            return acc;
+        };
+        return runThruFileMethod(acc, entry, path);
+    }, values);
     return values;
 };
 
@@ -90,13 +96,15 @@ const handleThruFile = async (treeItem: ITreeItem): Promise<void> => {
     if (Object.keys(thruFile).length === 0) {
         return;
     };
-    const { contentItems, itemsToStore } = getThruFileValues(thruFile, treeItem.path);
+    const { contentItems, itemsToStore, hasCompleted } =
+        getThruFileValues(thruFile, treeItem.path);
     const destFilePath = useProjectRoot(removeExt(removeThruInfix(treeItem.path)));
     contentItems.length > 0
         ? await writeFile(destFilePath, contentItems.join('\n')) &&
           console.log(`✓ ${treeItem.path} --> ${destFilePath}`)
         : console.log(
             `! NOTE: no content returned from file at path: ${treeItem.path}. ` +
+            (typeof hasCompleted === 'string' ? hasCompleted + ' ' : '') +
             'Result: target file not created.'
           );
     addToStore(itemsToStore);
