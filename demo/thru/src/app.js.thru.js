@@ -10,7 +10,10 @@ const renamePkgToVar = name => name.replace(/-(\w)/g, (hyphen, char) => char.toU
 
 const resolvers = {
 
-    /* Return empty if framework not Express or compute values for later use */
+    /*
+        Return empty if framework not Express or compute values for later use,
+        throwing error if value required absent
+    */
 
     compute: conf => {
 
@@ -44,9 +47,30 @@ const resolvers = {
             return module;
         });
 
+        /* Extract variables & check those required present */
+
+        let variables = conf?.variables || {};
+
+        const varsRequired = [
+            'port',
+            'info',
+            'user'
+        ];
+
+        const varsAbsent = [];
+        for (let varRequired of varsRequired) {
+            if (!variables[varRequired] || !variables[varRequired].val) {
+                varsAbsent.push(varRequired);
+            };
+        };
+        if (varsAbsent.length > 0) {
+            throw new Error(`Variable(s) ${varsAbsent.join(', ')} required.`);
+        };
+
         return {
             forNext: {
-                modules: (modules && modules.length) > 0 ? modules : null
+                modules: (modules && modules.length) > 0 ? modules : null,
+                variables: Object.keys(variables).length > 0 ? variables : null
             }
         };
 
@@ -99,31 +123,25 @@ const resolvers = {
 
     /* Throw error if variable(s) absent or generate lines for 'Other values' section */
 
-    otherValues: conf => {
-
-        if (!conf.variables || Object.keys(conf.variables).length === 0
-                || !conf.variables.port
-                || !conf.variables.info
-                || !conf.variables.user
-            ) {
-            throw new Error('Requisite variable(s) not found');
-        };
+    otherValues: (conf, comp) => {
 
         const contentItems = ['/*\n    Other values\n*/\n'];
 
-        const furtherLines = Object.keys(conf.variables).reduce((acc, key) => {
-            const src = conf.variables[key]?.src;
-            const dec = conf.variables[key]?.wrt ? 'let' : 'const';
-            const id = dec === 'const' ? key.toUpperCase() : key;
-            let val = conf.variables[key]?.val;
-            val = typeof val === 'string' ? `'${val}'` : val;
-            src === '.env' && acc.push(`${dec} ${id} = process.env.${key.toUpperCase()};`)
-            src === 'main' && acc.push(`${dec} ${id} = ${val};`);
-            return acc;
-        }, []);
+        if (comp.variables) {
+            const furtherLines = Object.keys(comp.variables).reduce((acc, key) => {
+                const src = comp.variables[key]?.src;
+                const dec = comp.variables[key]?.wrt ? 'let' : 'const';
+                const id = dec === 'const' ? key.toUpperCase() : key;
+                let val = comp.variables[key]?.val;
+                val = typeof val === 'string' ? `'${val}'` : val;
+                src === '.env' && acc.push(`${dec} ${id} = process.env.${key.toUpperCase()};`)
+                src === 'main' && acc.push(`${dec} ${id} = ${val};`);
+                return acc;
+            }, []);
 
-        contentItems.push(...furtherLines);
-        contentItems.push('\nconst capitalizedInfo = info.slice(0, 1).toUpperCase() + info.slice(1);');
+            contentItems.push(...furtherLines);
+            contentItems.push('\nconst capitalizedInfo = info.slice(0, 1).toUpperCase() + info.slice(1);');
+        };
 
         return {
             content: contentItems.join('\n') + '\n'
