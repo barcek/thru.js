@@ -45,8 +45,8 @@
             },
             "modules": [
                 {
-                    "src": "dotenv",
-                    "run": "dotenv.config();"
+                    "use": "dotenvLoading",
+                    "src": "dotenv"
                 },
                 {
                     "src": "helmet",

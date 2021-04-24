@@ -20,7 +20,29 @@ const resolvers = {
             };
         };
 
-        const modules = conf?.components?.appServer?.modules;
+        /* Extract modules, check support & provide code required */
+
+        let modules = conf?.components?.appServer?.modules || [];
+
+        const moduleUses = {
+            dotenvLoading: {
+                dotenv: {
+                    run: 'dotenv.config();'
+                }
+            }
+        };
+
+        modules = modules.map(module => {
+            if (moduleUses[module.use] && !moduleUses[module.use][module.src]) {
+                throw new Error(`Source '${module.src}' unsupported for use '${module.use}'.`);
+            };
+            if (moduleUses[module.use] && moduleUses[module.use][module.src]) {
+                for (let key of Object.keys(moduleUses[module.use][module.src])) {
+                    module[key] = moduleUses[module.use][module.src][key];
+                };
+            };
+            return module;
+        });
 
         return {
             forNext: {
