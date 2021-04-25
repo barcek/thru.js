@@ -4,8 +4,8 @@
 
 import path from 'path';
 
-import * as t from '../types/index.js';
-import * as u from '../utils/index.js';
+import { IThruConf } from '../types/index.js';
+import { loadJSON } from '../utils/index.js';
 
 /*
     Default segments
@@ -45,7 +45,7 @@ const thruConfJSONFilePath: string = path.resolve(projectRoot, thruConfJSONFile)
     Conf file loading
 */
 
-const thruConf = await u.loadJSON<t.IThruConf>(thruConfJSONFilePath);
+const thruConf = await loadJSON<IThruConf>(thruConfJSONFilePath);
 
 /*
     Exports

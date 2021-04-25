@@ -6,7 +6,7 @@ import path from 'path';
 import { promises as fs, Dirent } from 'fs';
 
 import { ITreeItem } from '../types/index.js';
-import { quoteItems, createList, sIfMultiple, hasOwnDir, getBasenames, listContents, reduceTree, separateContents, confirmProceed } from './index.js';
+import { hasOwnDir, listContents, reduceTree, confirmProceed } from './index.js';
 
 /*
     File utils
