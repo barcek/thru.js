@@ -18,7 +18,7 @@ The `isReady` property can be set to `true` to ensure that no further methods in
 
 Any other properties on the returned object are placed on the `store` object, which is made available to later methods and later files. Any method placed on the `store` object with the substring 'Task' in its key will be run once after the target file tree is built.
 
-The `forNext` and `store` objects are the second and third arguments to each method.
+The `forNext` and `store` objects are the second and third arguments to each method. The former starts out holding the project root path to help with importing resources and managing context.
 
 To run preliminary tasks, just use a thru file with one or more methods that return no content. Again, thru files that produce no content are not represented in the target file tree.
 
