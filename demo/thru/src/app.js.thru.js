@@ -1,15 +1,8 @@
 /*
-    Utilities
+    Imports
 */
 
-const namePkgVar = name => name.replace(/-(\w)/g, (hyphen, char) => char.toUpperCase());
-const sIfMultiple = arr => arr.length > 1 ? 's' : '';
-const quoteItems = arr => arr.map(item => `'${item}'`);
-const createList = arr => arr.reduce((acc, item, i, arr) =>
-        i === 0            ? item :
-        i < arr.length - 1 ? acc + ', ' + item
-                           : acc + ' & ' + item
-, '');
+import path from 'path';
 
 /*
     Assumptions
@@ -32,17 +25,22 @@ const modsSupported = {
 const resolvers = {
 
     /*
-        Return empty if framework not Express or compute values for later use,
+        Return empty if framework not Express
+        or import utils & compute values for later use,
         throwing error if module unsupported or variable required absent
     */
 
-    compute: conf => {
+    compute: async (conf, init) => {
 
         if (conf?.components?.appServer?.runtime?.data?.fWrk !== 'express') {
             return {
                 isEmpty: 'No framework set or framework not Express.'
             };
         };
+
+        /* Import utils, resolving path from segments in conf & init */
+
+        const utils = await import(path.resolve(init.projectRootPath, conf.resources.utils));
 
         /* Extract modules, check support & assign content required */
 
@@ -71,12 +69,13 @@ const resolvers = {
             };
         };
         if (varsAbsent.length > 0) {
-            throw new Error(`Variable${sIfMultiple(varsAbsent)} ` +
-                `${createList(quoteItems(varsAbsent))} required`);
+            throw new Error(`Variable${utils.sIfMultiple(varsAbsent)} ` +
+                `${utils.createList(utils.quoteItems(varsAbsent))} required`);
         };
 
         return {
             forNext: {
+                utils,
                 modules,
                 variables
             }
@@ -95,7 +94,7 @@ const resolvers = {
 
         const furtherItems = comp.modules.reduce((acc, module) => {
             const src = module.src;
-            src !== 'express' && acc.push(`import ${namePkgVar(src)} from '${src}';`);
+            src !== 'express' && acc.push(`import ${comp.utils.namePkgVar(src)} from '${src}';`);
             return acc;
         }, []);
 
@@ -168,7 +167,7 @@ const resolvers = {
             module.mid
                 && (typeof module.mid === 'string'
                     ? acc.push(module.mid)
-                    : acc.push(`app.use(${namePkgVar(module.src)}());`));
+                    : acc.push(`app.use(${comp.utils.namePkgVar(module.src)}());`));
             return acc;
         }, []);
 
