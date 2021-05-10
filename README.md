@@ -55,3 +55,40 @@ To generate the demo project, in the root directory run `npm run build` or `tsc`
 ## Not done yet
 
 Fuller documentation, expansion of the demo project model & further improvements to follow.
+
+## Repository tree
+
+```
+./
+├── demo
+│   ├── thru
+│   │   ├── src
+│   │   │   └── app.js.thru.js
+│   │   ├── .env.thru.js
+│   │   ├── .gitignore.thru.js
+│   │   └── package.json.thru.js
+│   ├── thru.conf.json
+│   └── thru.utils.js
+├── src
+│   ├── confs
+│   │   └── index.ts
+│   ├── tasks
+│   │   ├── generate.ts
+│   │   └── index.ts
+│   ├── types
+│   │   └── index.ts
+│   ├── utils
+│   │   ├── file.ts
+│   │   ├── index.ts
+│   │   ├── path.ts
+│   │   ├── text.ts
+│   │   ├── tree.ts
+│   │   └── user.ts
+│   └── index.ts
+├── .gitignore
+├── LICENSE.txt
+├── README.md
+├── package-lock.json
+├── package.json
+└── tsconfig.json
+```
