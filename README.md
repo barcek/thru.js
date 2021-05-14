@@ -52,6 +52,10 @@ The 'demo' directory contains an initial demo project model. It presents one pos
 
 To generate the demo project, in the root directory run `npm run build` or `tsc`, as described above, then `cd demo` to enter the 'demo' directory. There, with the compiled TypeScript in the 'dist' folder, it should be possible to run `node ../dist/index.js` to generate the project, followed by `npm install` to install the dependencies. Once installed, the command `node src/app.js` should start the server listening at `http://localhost:3000`.
 
+## Working with HTML
+
+If you need to generate HTML, or interact with existing snippets, you could use [awb](https://github.com/barcek/awb).
+
 ## Not done yet
 
 Fuller documentation, expansion of the demo project model & further improvements to follow.
