@@ -66,6 +66,10 @@ Fuller documentation, expansion of the demo project model & further improvements
 
 If you need to generate HTML, or interact with existing snippets, you could use [awb](https://github.com/barcek/awb).
 
+## npm audit
+
+The `npm audit` command can be used to run a security audit on the dependencies used, with the process returning information on updates where available. The command `npm audit fix` can be used instead or thereafter to install compatible updates. See the npm documentation for [more detail](https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities).
+
 ## Repository tree
 
 ```
