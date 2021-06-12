@@ -34,7 +34,25 @@ When exporting the methods from a thru file, use either the ES Module `export de
 
 ## Getting started
 
-In the repository root directory, run `npm run build` or `tsc` to compile the TypeScript into a 'dist' folder.
+### Cloning the repository, installing dependencies & compiling
+
+You'll need Git & npm installed.
+
+First, enter the directory in which you'd like to store the library and run the Git command to clone the repository:
+
+```shell
+git clone https://github.com/barcek/thru.js.git
+```
+
+Next, enter the newly created 'thru.js' directory and run the npm command to install dependencies:
+
+```shell
+npm install
+```
+
+Finally, run either `npm run build` or `tsc` to compile the TypeScript into a 'dist' folder.
+
+### Generating a project
 
 Create the file tree for the project model. This need not have any thru files.
 
