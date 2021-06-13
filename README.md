@@ -76,7 +76,7 @@ The 'demo' directory contains an initial demo project model. It presents one pos
 
 To generate the demo project, in the root directory run `npm run build` or `tsc`, as described above, then `cd demo` to enter the 'demo' directory. There, with the compiled TypeScript in the 'dist' folder, it should be possible to run `node ../dist/index.js` to generate the project, followed by `npm install` to install the dependencies. Once installed, the command `node src/app.js` should start the server listening at `http://localhost:3000`.
 
-## Nowhere near done yet
+## Nowhere near done
 
 Fuller documentation, expansion of the demo project model & further improvements to follow.
 
@@ -84,7 +84,11 @@ Fuller documentation, expansion of the demo project model & further improvements
 
 If you need to generate HTML, or interact with existing snippets, you could use [awb](https://github.com/barcek/awb).
 
-## npm audit
+### Making changes
+
+A regular audit of dependencies is recommended.
+
+#### npm audit
 
 The `npm audit` command can be used to run a security audit on the dependencies used, with the process returning information on updates where available. The command `npm audit fix` can be used instead or thereafter to install compatible updates. See the npm documentation for [more detail](https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities).
 
