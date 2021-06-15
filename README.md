@@ -4,6 +4,20 @@ An unopinionated project generator for model-driven development.
 
 Just fill a JSON file with project values, build a file tree representing the project model and add the '.thru.js' suffix to the names of files to be created on the fly. In those files - 'thru files' - write code to apply the project values.
 
+- [How..?](#how)
+- [Also...](#also)
+    - [Other return properties](#other-return-properties)
+    - [Arguments to the methods](#arguments-to-the-methods)
+    - [A note on export syntax](#a-note-on-export-syntax)
+- [Getting started](#getting-started)
+    - [Cloning the repository, installing dependencies & compiling](#cloning-the-repository-installing-dependencies--compiling)
+    - [Generating a project](#generating-a-project)
+- [The demo project model](#the-demo-project-model)
+- [Nowhere near done](#nowhere-near-done)
+    - [Working with HTML](#working-with-html)
+    - [Making changes](#making-changes)
+- [Repository tree](#repository-tree)
+
 ## How..?
 
 Each thru file should export an object with one or more methods. Each method receives the parsed JSON as its first parameter and can return an object with a `content` property containing file content as a string.
