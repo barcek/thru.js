@@ -4,9 +4,8 @@
 
 import path from 'path';
 
-import { thruRootPath, projectRootPath, thruConf, thruFileInfix } from '../confs/index.js';
 import { ITreeItem, IThruFile, IThruVals } from '../types/index.js';
-import { mkdir, writeFile, copyFile, switchRoot, removeInfix, removeExt, handleTree } from '../utils/index.js';
+import { readTree, mkdir, writeFile, copyFile, switchRoot, removeInfix, removeExt, handleTree } from '../utils/index.js';
 
 /*
     Constants
@@ -15,22 +14,25 @@ import { mkdir, writeFile, copyFile, switchRoot, removeInfix, removeExt, handleT
 const store = {} as Record<string, any>;
 
 /*
-    Utils, partials
+    Utils
 */
 
-const removeThruInfix = removeInfix(thruFileInfix);
+const readThruTree = async (confs: Record<string, any>): Promise<Array<ITreeItem>> => {
+    return await readTree(confs.thruRootPath);
+};
 
-const useProjectRoot = switchRoot(thruRootPath)(projectRootPath);
+const useProjectRoot = (confs: Record<string, any>) =>
+    switchRoot(confs.thruRootPath)(confs.projectRootPath);
 
 /*
     Subtasks - for store
 */
 
-const runStoredTasks = async (): Promise<void> => {
+const runStoredTasks = async (confs: Record<string, any>): Promise<void> => {
     const storeKeys = Object.keys(store);
     for (let key in storeKeys) {
         key.includes('Task') && typeof store[key] === 'function'
-            && await store[key](thruConf, store);
+            && await store[key](confs.thruConf, store);
     };
 };
 
@@ -42,11 +44,11 @@ const addToStore = (items: Record<string, any>): void => {
     Subtasks - for thru files
 */
 
-const runThruFileMethod = async (acc: IThruVals, entry: any[], path: string): Promise<IThruVals> => {
+const runThruFileMethod = async (acc: IThruVals, entry: any[], path: string, confs: Record<string, any>): Promise<IThruVals> => {
     const [ key, method ] = entry;
     try {
         const { content = '', forNext = {}, isReady, isEmpty, ...toStore } =
-            await method(thruConf, acc.itemsForNext, store) || {};
+            await method(confs.thruConf, acc.itemsForNext, store) || {};
         content && acc.contentItems.push(content);
         forNext && Object.assign(acc.itemsForNext, forNext);
         toStore && Object.assign(acc.itemsToStore, toStore);
@@ -63,11 +65,11 @@ const runThruFileMethod = async (acc: IThruVals, entry: any[], path: string): Pr
     return acc;
 };
 
-const getThruFileValues = async (thruFile: IThruFile, path: string): Promise<IThruVals> => {
+const getThruFileValues = async (thruFile: IThruFile, path: string, confs: Record<string, any>): Promise<IThruVals> => {
     let values = {
         contentItems: [] as string[],
         itemsToStore: {} as IThruVals,
-        itemsForNext: { projectRootPath } as IThruVals,
+        itemsForNext: { projectRootPath: confs.projectRootPath } as IThruVals,
         hasCompleted: false as boolean
     } as IThruVals;
     const resolvers = Object.entries(thruFile.default) as Array<any[]>;
@@ -75,7 +77,7 @@ const getThruFileValues = async (thruFile: IThruFile, path: string): Promise<ITh
         if (values.hasCompleted) {
             break;
         };
-        values = await runThruFileMethod(values, resolver, path);
+        values = await runThruFileMethod(values, resolver, path, confs);
     };
     return values;
 };
@@ -92,14 +94,15 @@ const importThruFile = async (thruFilePath: string): Promise<IThruFile> => {
     };
 };
 
-const handleThruFile = async (treeItem: ITreeItem): Promise<void> => {
+const handleThruFile = async (treeItem: ITreeItem, confs: Record<string, any>): Promise<void> => {
     const thruFile = await importThruFile(treeItem.path);
     if (Object.keys(thruFile).length === 0) {
         return;
     };
     const { contentItems, itemsToStore, hasCompleted } =
-        await getThruFileValues(thruFile, treeItem.path);
-    const destFilePath = useProjectRoot(removeExt(removeThruInfix(treeItem.path)));
+        await getThruFileValues(thruFile, treeItem.path, confs);
+    const baseFilename = removeExt(removeInfix(confs.thruFileInfix)(treeItem.path));
+    const destFilePath = useProjectRoot(confs)(baseFilename);
     contentItems.length > 0
         ? await writeFile(destFilePath, contentItems.join('\n')) &&
           console.log(`✓ ${treeItem.path} --> ${destFilePath}`)
@@ -115,14 +118,14 @@ const handleThruFile = async (treeItem: ITreeItem): Promise<void> => {
     Subtasks - for folders & non-thru files
 */
 
-const handleFolder = async (treeItem: ITreeItem): Promise<void> => {
-    const destFolderPath = useProjectRoot(treeItem.path);
+const handleFolder = async (treeItem: ITreeItem, confs: Record<string, any>): Promise<void> => {
+    const destFolderPath = useProjectRoot(confs)(treeItem.path);
     await mkdir(destFolderPath, treeItem)
         && console.log(`✓ ${treeItem.path} --> ${destFolderPath}`);
 };
 
-const handleNonThruFile = async (treeItem: ITreeItem): Promise<void> => {
-    const destFilePath = useProjectRoot(treeItem.path);
+const handleNonThruFile = async (treeItem: ITreeItem, confs: Record<string, any>): Promise<void> => {
+    const destFilePath = useProjectRoot(confs)(treeItem.path);
     await copyFile(treeItem.path, destFilePath);
     console.log(`✓ ${treeItem.path} --> ${destFilePath}`);
 };
@@ -131,25 +134,24 @@ const handleNonThruFile = async (treeItem: ITreeItem): Promise<void> => {
     Subtasks - for all tree items
 */
 
-const handleTreeItem = async (treeItem: ITreeItem): Promise<void> => {
-    treeItem.type === 'folder' && await handleFolder(treeItem);
+const handleTreeItem: (confs: Record<string, any>) => (treeItem: ITreeItem) => Promise<void> = confs => async treeItem => {
+    treeItem.type === 'folder' && await handleFolder(treeItem, confs);
     if (treeItem.type === 'file') {
-        path.basename(treeItem.path).includes(thruFileInfix)
-            ? await handleThruFile(treeItem)
-            : await handleNonThruFile(treeItem);
+        path.basename(treeItem.path).includes(confs.thruFileInfix)
+            ? await handleThruFile(treeItem, confs)
+            : await handleNonThruFile(treeItem, confs);
     };
 };
-
-const handleTreeItems = handleTree(handleTreeItem);
 
 /*
     Task
 */
 
-const generate = async (thruTree: Array<ITreeItem>): Promise<void> => {
-    console.log('Generating...');
-    await handleTreeItems(thruTree);
-    await runStoredTasks();
+const generate = async (confs: Record<string, any>): Promise<void> => {
+    const handleThruTreeItem = handleTreeItem(confs);
+    const thruTree = await readThruTree(confs);
+    await handleTree(handleThruTreeItem)(thruTree);
+    await runStoredTasks(confs);
 };
 
 /*

@@ -51,7 +51,7 @@ const thruConf = await loadJSON<IThruConf>(thruConfJSONFilePath);
     Exports
 */
 
-export {
+export default {
     thruRootPath,
     projectRootPath,
     thruConf,

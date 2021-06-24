@@ -2,20 +2,8 @@
     Imports
 */
 
-import { thruRootPath } from '../confs/index.js';
-import { ITreeItem } from '../types/index.js';
-import { readTree } from '../utils/index.js';
-
+import confs from '../confs/index.js';
 import generate from './generate.js';
-
-/*
-    Utils
-*/
-
-const readThruTree = async (): Promise<Array<ITreeItem>> => {
-    console.log('Reading tree...');
-    return await readTree(thruRootPath);
-};
 
 /*
     Tasks
@@ -23,10 +11,14 @@ const readThruTree = async (): Promise<Array<ITreeItem>> => {
 
 const tasks: Record<string, () => Promise<void>> = {
     generate: async function() {
-        const thruTree = await readThruTree();
-        await generate(thruTree);
+        console.log('Generating...');
+        await generate(confs);
     }
 };
+
+/*
+    Runner
+*/
 
 const run = async (task: string): Promise<void> => {
     await tasks[task]();
