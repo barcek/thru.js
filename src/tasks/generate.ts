@@ -17,12 +17,17 @@ const store = {} as Record<string, any>;
     Utils
 */
 
-const readThruTree = async (confs: Record<string, any>): Promise<Array<ITreeItem>> => {
-    return await readTree(confs.thruRootPath);
-};
+const readThruTree = async (confs: Record<string, any>): Promise<Array<ITreeItem>> =>
+    await readTree(confs.thruRootPath);
 
-const useProjectRoot = (confs: Record<string, any>) =>
-    switchRoot(confs.thruRootPath)(confs.projectRootPath);
+const getDestPath = (confs: Record<string, any>, path: string): string =>
+    switchRoot(confs.thruRootPath)(confs.projectRootPath)(path);
+
+const getBasePath = (confs: Record<string, any>, path: string): string =>
+    removeExt(removeInfix(confs.thruFileInfix)(path));
+
+const getBaseDestPath = (confs: Record<string, any>, path: string): string =>
+    getDestPath(confs, getBasePath(confs, path));
 
 /*
     Subtasks - for store
@@ -101,8 +106,7 @@ const handleThruFile = async (treeItem: ITreeItem, confs: Record<string, any>): 
     };
     const { contentItems, itemsToStore, hasCompleted } =
         await getThruFileValues(thruFile, treeItem.path, confs);
-    const baseFilename = removeExt(removeInfix(confs.thruFileInfix)(treeItem.path));
-    const destFilePath = useProjectRoot(confs)(baseFilename);
+    const destFilePath = getBaseDestPath(confs, treeItem.path);
     contentItems.length > 0
         ? await writeFile(destFilePath, contentItems.join('\n')) &&
           console.log(`✓ ${treeItem.path} --> ${destFilePath}`)
@@ -119,13 +123,13 @@ const handleThruFile = async (treeItem: ITreeItem, confs: Record<string, any>): 
 */
 
 const handleFolder = async (treeItem: ITreeItem, confs: Record<string, any>): Promise<void> => {
-    const destFolderPath = useProjectRoot(confs)(treeItem.path);
+    const destFolderPath = getDestPath(confs, treeItem.path);
     await mkdir(destFolderPath, treeItem)
         && console.log(`✓ ${treeItem.path} --> ${destFolderPath}`);
 };
 
 const handleNonThruFile = async (treeItem: ITreeItem, confs: Record<string, any>): Promise<void> => {
-    const destFilePath = useProjectRoot(confs)(treeItem.path);
+    const destFilePath = getDestPath(confs, treeItem.path);
     await copyFile(treeItem.path, destFilePath);
     console.log(`✓ ${treeItem.path} --> ${destFilePath}`);
 };
