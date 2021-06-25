@@ -84,6 +84,12 @@ Alternatively, in a directory other than the target directory, run a command wit
 node path/to/index.js path/to/model-dir path/to/target-dir
 ```
 
+The tool logs to the console any notes and errors. It will also log progress messages if the `--verbose` or `-v` flag is included in the command anywhere after `path/to/index.js`, e.g.:
+
+```shell
+node path/to/index.js --verbose path/to/model-dir path/to/target-dir
+```
+
 ## The demo project model
 
 The 'demo' directory contains an initial demo project model. It presents one possible approach to the structure of the 'thru.conf.json' file and thru file resolvers and currently provides for a simple backend using Node.js with the Express.js framework, with expansion to a fuller stack solution using TypeScript to follow.
