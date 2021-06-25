@@ -4,7 +4,7 @@
 
 import path from 'path';
 
-import { ITreeItem, IThruFile, IThruVals } from '../types/index.js';
+import { IConfs, ITreeItem, IThruFile, IThruVals } from '../types/index.js';
 import { readTree, mkdir, writeFile, copyFile, switchRoot, removeInfix, removeExt, handleTree } from '../utils/index.js';
 
 /*
@@ -17,23 +17,23 @@ const store = {} as Record<string, any>;
     Utils
 */
 
-const readThruTree = async (confs: Record<string, any>): Promise<Array<ITreeItem>> =>
+const readThruTree = async (confs: IConfs): Promise<Array<ITreeItem>> =>
     await readTree(confs.thruRootPath);
 
-const getDestPath = (confs: Record<string, any>, path: string): string =>
+const getDestPath = (confs: IConfs, path: string): string =>
     switchRoot(confs.thruRootPath)(confs.projectRootPath)(path);
 
-const getBasePath = (confs: Record<string, any>, path: string): string =>
+const getBasePath = (confs: IConfs, path: string): string =>
     removeExt(removeInfix(confs.thruFileInfix)(path));
 
-const getBaseDestPath = (confs: Record<string, any>, path: string): string =>
+const getBaseDestPath = (confs: IConfs, path: string): string =>
     getDestPath(confs, getBasePath(confs, path));
 
 /*
     Subtasks - for store
 */
 
-const runStoredTasks = async (confs: Record<string, any>): Promise<void> => {
+const runStoredTasks = async (confs: IConfs): Promise<void> => {
     const storeKeys = Object.keys(store);
     for (let key in storeKeys) {
         key.includes('Task') && typeof store[key] === 'function'
@@ -49,7 +49,7 @@ const addToStore = (items: Record<string, any>): void => {
     Subtasks - for thru files
 */
 
-const runThruFileMethod = async (acc: IThruVals, entry: any[], path: string, confs: Record<string, any>): Promise<IThruVals> => {
+const runThruFileMethod = async (acc: IThruVals, entry: any[], path: string, confs: IConfs): Promise<IThruVals> => {
     const [ key, method ] = entry;
     try {
         const { content = '', forNext = {}, isReady, isEmpty, ...toStore } =
@@ -70,7 +70,7 @@ const runThruFileMethod = async (acc: IThruVals, entry: any[], path: string, con
     return acc;
 };
 
-const getThruFileValues = async (thruFile: IThruFile, path: string, confs: Record<string, any>): Promise<IThruVals> => {
+const getThruFileValues = async (thruFile: IThruFile, path: string, confs: IConfs): Promise<IThruVals> => {
     let values = {
         contentItems: [] as string[],
         itemsToStore: {} as IThruVals,
@@ -99,7 +99,7 @@ const importThruFile = async (thruFilePath: string): Promise<IThruFile> => {
     };
 };
 
-const handleThruFile = async (treeItem: ITreeItem, confs: Record<string, any>): Promise<void> => {
+const handleThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void> => {
     const thruFile = await importThruFile(treeItem.path);
     if (Object.keys(thruFile).length === 0) {
         return;
@@ -122,13 +122,13 @@ const handleThruFile = async (treeItem: ITreeItem, confs: Record<string, any>): 
     Subtasks - for folders & non-thru files
 */
 
-const handleFolder = async (treeItem: ITreeItem, confs: Record<string, any>): Promise<void> => {
+const handleFolder = async (treeItem: ITreeItem, confs: IConfs): Promise<void> => {
     const destFolderPath = getDestPath(confs, treeItem.path);
     await mkdir(destFolderPath, treeItem)
         && console.log(`✓ ${treeItem.path} --> ${destFolderPath}`);
 };
 
-const handleNonThruFile = async (treeItem: ITreeItem, confs: Record<string, any>): Promise<void> => {
+const handleNonThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void> => {
     const destFilePath = getDestPath(confs, treeItem.path);
     await copyFile(treeItem.path, destFilePath);
     console.log(`✓ ${treeItem.path} --> ${destFilePath}`);
@@ -138,7 +138,7 @@ const handleNonThruFile = async (treeItem: ITreeItem, confs: Record<string, any>
     Subtasks - for all tree items
 */
 
-const handleTreeItem: (confs: Record<string, any>) => (treeItem: ITreeItem) => Promise<void> = confs => async treeItem => {
+const handleTreeItem: (confs: IConfs) => (treeItem: ITreeItem) => Promise<void> = confs => async treeItem => {
     treeItem.type === 'folder' && await handleFolder(treeItem, confs);
     if (treeItem.type === 'file') {
         path.basename(treeItem.path).includes(confs.thruFileInfix)
@@ -151,7 +151,7 @@ const handleTreeItem: (confs: Record<string, any>) => (treeItem: ITreeItem) => P
     Task
 */
 
-const generate = async (confs: Record<string, any>): Promise<void> => {
+const generate = async (confs: IConfs): Promise<void> => {
     const handleThruTreeItem = handleTreeItem(confs);
     const thruTree = await readThruTree(confs);
     await handleTree(handleThruTreeItem)(thruTree);
