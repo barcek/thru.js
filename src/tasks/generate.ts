@@ -108,8 +108,8 @@ const handleThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void>
         await getThruFileValues(thruFile, treeItem.path, confs);
     const destFilePath = getBaseDestPath(confs, treeItem.path);
     contentItems.length > 0
-        ? await writeFile(destFilePath, contentItems.join('\n')) &&
-          console.log(`✓ ${treeItem.path} --> ${destFilePath}`)
+        ? await writeFile(destFilePath, contentItems.join('\n'))
+            && confs.isVerbose && console.log(`✓ ${treeItem.path} --> ${destFilePath}`)
         : console.log(
             `! NOTE: no content returned from file at path: ${treeItem.path}. ` +
             (typeof hasCompleted === 'string' ? hasCompleted + ' ' : '') +
@@ -124,14 +124,14 @@ const handleThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void>
 
 const handleFolder = async (treeItem: ITreeItem, confs: IConfs): Promise<void> => {
     const destFolderPath = getDestPath(confs, treeItem.path);
-    await mkdir(destFolderPath, treeItem)
+    await mkdir(destFolderPath, treeItem) && confs.isVerbose
         && console.log(`✓ ${treeItem.path} --> ${destFolderPath}`);
 };
 
 const handleNonThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void> => {
     const destFilePath = getDestPath(confs, treeItem.path);
     await copyFile(treeItem.path, destFilePath);
-    console.log(`✓ ${treeItem.path} --> ${destFilePath}`);
+    confs.isVerbose && console.log(`✓ ${treeItem.path} --> ${destFilePath}`);
 };
 
 /*

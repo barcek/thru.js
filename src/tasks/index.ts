@@ -11,7 +11,7 @@ import generate from './generate.js';
 
 const tasks: Record<string, () => Promise<void>> = {
     generate: async function() {
-        console.log('Generating...');
+        confs.isVerbose && console.log('Generating...');
         await generate(confs);
     }
 };
@@ -22,7 +22,7 @@ const tasks: Record<string, () => Promise<void>> = {
 
 const run = async (task: string): Promise<void> => {
     await tasks[task]();
-    console.log('Done.');
+    confs.isVerbose && console.log('Done.');
 };
 
 /*

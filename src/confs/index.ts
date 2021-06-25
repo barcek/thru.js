@@ -18,17 +18,24 @@ const thruConfJSONFile: string = 'thru.conf.json';
 const thruFileInfix = '.thru';
 
 /*
-    Segment arguments
+    Argument separation
 */
 
 const args: string[] = process.argv.slice(2);
 
-if (args[0]) {
-    thruRoot = args[0];
+const paths = args.filter(item => item[0] !== '-');
+const flags = args.filter(item => item[0] === '-');
+
+/*
+    Segment arguments
+*/
+
+if (paths[0]) {
+    thruRoot = paths[0];
 };
 
-if (args[1]) {
-    projectRoot = args[1];
+if (paths[1]) {
+    projectRoot = paths[1];
 };
 
 /*
@@ -39,6 +46,7 @@ const PWD: string = process.env.PWD || './';
 
 const thruRootPath: string = path.resolve(PWD, thruRoot);
 const projectRootPath: string = path.resolve(PWD, projectRoot);
+
 const thruConfJSONFilePath: string = path.resolve(projectRoot, thruConfJSONFile);
 
 /*
@@ -48,6 +56,12 @@ const thruConfJSONFilePath: string = path.resolve(projectRoot, thruConfJSONFile)
 const thruConf = await loadJSON<IThruConf>(thruConfJSONFilePath);
 
 /*
+    Other options
+*/
+
+const isVerbose = flags.findIndex(item => item === '-v' || item === '--verbose') !== -1;
+
+/*
     Exports
 */
 
@@ -55,5 +69,6 @@ export default {
     thruRootPath,
     projectRootPath,
     thruConf,
-    thruFileInfix
+    thruFileInfix,
+    isVerbose
 };

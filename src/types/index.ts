@@ -21,6 +21,7 @@ interface IConfs {
     projectRootPath: string;
     thruConf: IThruConf;
     thruFileInfix: string;
+    isVerbose: boolean;
 };
 
 /*
