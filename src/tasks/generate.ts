@@ -5,7 +5,7 @@
 import path from 'path';
 
 import { IConfs, ITreeItem, IThruFile, IThruVals } from '../types/index.js';
-import { readTree, importFile, mkdir, writeFile, copyFile, switchRoot, removeInfix, removeExt, handleTree } from '../utils/index.js';
+import * as utils from '../utils/index.js';
 
 /*
     Constants
@@ -18,13 +18,13 @@ const store = {} as Record<string, any>;
 */
 
 const readThruTree = async (confs: IConfs): Promise<Array<ITreeItem>> =>
-    await readTree(confs.thruRootPath);
+    await utils.readTree(confs.thruRootPath);
 
 const getDestPath = (confs: IConfs, path: string): string =>
-    switchRoot(confs.thruRootPath)(confs.projectRootPath)(path);
+    utils.switchRoot(confs.thruRootPath)(confs.projectRootPath)(path);
 
 const getBasePath = (confs: IConfs, path: string): string =>
-    removeExt(removeInfix(confs.thruFileInfix)(path));
+    utils.removeExt(utils.removeInfix(confs.thruFileInfix)(path));
 
 const getBaseDestPath = (confs: IConfs, path: string): string =>
     getDestPath(confs, getBasePath(confs, path));
@@ -89,7 +89,7 @@ const getThruFileValues = async (thruFile: IThruFile, path: string, confs: IConf
 
 const importThruFile = async (thruFilePath: string): Promise<IThruFile> => {
     try {
-        return await importFile(path.resolve(thruFilePath));
+        return await utils.importFile(path.resolve(thruFilePath));
     } catch (err) {
         console.log(
             `✕ ERROR importing thru file at path: ${thruFilePath}. ` + err + '. ' +
@@ -108,7 +108,7 @@ const handleThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void>
         await getThruFileValues(thruFile, treeItem.path, confs);
     const destFilePath = getBaseDestPath(confs, treeItem.path);
     contentItems.length > 0
-        ? await writeFile(destFilePath, contentItems.join('\n'))
+        ? await utils.writeFile(destFilePath, contentItems.join('\n'))
             && confs.isVerbose && console.log(`✓ ${treeItem.path} --> ${destFilePath}`)
         : console.log(
             `! NOTE: no content returned from file at path: ${treeItem.path}. ` +
@@ -124,13 +124,13 @@ const handleThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void>
 
 const handleFolder = async (treeItem: ITreeItem, confs: IConfs): Promise<void> => {
     const destFolderPath = getDestPath(confs, treeItem.path);
-    await mkdir(destFolderPath, treeItem) && confs.isVerbose
+    await utils.mkdir(destFolderPath, treeItem) && confs.isVerbose
         && console.log(`✓ ${treeItem.path} --> ${destFolderPath}`);
 };
 
 const handleNonThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void> => {
     const destFilePath = getDestPath(confs, treeItem.path);
-    await copyFile(treeItem.path, destFilePath);
+    await utils.copyFile(treeItem.path, destFilePath);
     confs.isVerbose && console.log(`✓ ${treeItem.path} --> ${destFilePath}`);
 };
 
@@ -154,7 +154,7 @@ const handleTreeItem: (confs: IConfs) => (treeItem: ITreeItem) => Promise<void> 
 const generate = async (confs: IConfs): Promise<void> => {
     const handleThruTreeItem = handleTreeItem(confs);
     const thruTree = await readThruTree(confs);
-    await handleTree(handleThruTreeItem)(thruTree);
+    await utils.handleTree(handleThruTreeItem)(thruTree);
     await runStoredTasks(confs);
 };
 
