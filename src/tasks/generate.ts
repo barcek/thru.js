@@ -17,9 +17,6 @@ const store = {} as Record<string, any>;
     Utils
 */
 
-const readThruTree = async (confs: IConfs): Promise<Array<ITreeItem>> =>
-    await utils.readTree(confs.thruRootPath);
-
 const getDestPath = (confs: IConfs, path: string): string =>
     utils.switchRoot(confs.thruRootPath)(confs.projectRootPath)(path);
 
@@ -152,8 +149,8 @@ const handleTreeItem: (confs: IConfs) => (treeItem: ITreeItem) => Promise<void> 
 */
 
 const generate = async (confs: IConfs): Promise<void> => {
+    const thruTree = await utils.readTree(confs.thruRootPath);
     const handleThruTreeItem = handleTreeItem(confs);
-    const thruTree = await readThruTree(confs);
     await utils.handleTree(handleThruTreeItem)(thruTree);
     await runStoredTasks(confs);
 };
