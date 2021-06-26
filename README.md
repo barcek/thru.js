@@ -106,7 +106,23 @@ If you need to generate HTML, or interact with existing snippets, you could use 
 
 ### Making changes
 
-A regular audit of dependencies is recommended.
+Running the tests after making changes and adding tests to cover new behaviour is recommended, as is a regular audit of dependencies.
+
+#### Test files
+
+The npm packages `mocha`, `sinon` and `ts-node` are used for testing and the test files can be run with the following command:
+
+```shell
+mocha
+```
+
+This command is the current content of the 'test' script in the 'package.json' file, which can be run with the following:
+
+```shell
+npm test
+```
+
+The files themselves are in the 'test' folder and the `mocha` configuration file with settings to accommodate `ts-node` is in the root directory.
 
 #### npm audit
 
@@ -141,7 +157,11 @@ The `npm audit` command can be used to run a security audit on the dependencies 
 │   │   ├── tree.ts
 │   │   └── user.ts
 │   └── index.ts
+├── test
+│   ├── generate.test.js
+│   └── test.thru.js
 ├── .gitignore
+├── .mocharc.json
 ├── LICENSE.txt
 ├── README.md
 ├── package-lock.json
