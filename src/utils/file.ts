@@ -53,6 +53,10 @@ const loadJSON = async <T>(JSONFilePath: string): Promise<T> => {
     return content;
 };
 
+const importFile = async (targetFilePath: string): Promise<any> => {
+    return await import(targetFilePath);
+};
+
 const mkdir = async (targetFolderPath: string, treeItem: ITreeItem): Promise<boolean> => {
 
     try {
@@ -116,6 +120,7 @@ const copyFile = async (extantFilePath: string, targetFilePath: string): Promise
 export {
     readTree,
     loadJSON,
+    importFile,
     mkdir,
     writeFile,
     copyFile

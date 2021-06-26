@@ -5,7 +5,7 @@
 import path from 'path';
 
 import { IConfs, ITreeItem, IThruFile, IThruVals } from '../types/index.js';
-import { readTree, mkdir, writeFile, copyFile, switchRoot, removeInfix, removeExt, handleTree } from '../utils/index.js';
+import { readTree, importFile, mkdir, writeFile, copyFile, switchRoot, removeInfix, removeExt, handleTree } from '../utils/index.js';
 
 /*
     Constants
@@ -89,7 +89,7 @@ const getThruFileValues = async (thruFile: IThruFile, path: string, confs: IConf
 
 const importThruFile = async (thruFilePath: string): Promise<IThruFile> => {
     try {
-        return await import(path.resolve(thruFilePath));
+        return await importFile(path.resolve(thruFilePath));
     } catch (err) {
         console.log(
             `✕ ERROR importing thru file at path: ${thruFilePath}. ` + err + '. ' +
