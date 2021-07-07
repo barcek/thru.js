@@ -16,6 +16,7 @@ Just fill a JSON file with project values, build a file tree representing the pr
 - [Nowhere near done](#nowhere-near-done)
     - [Working with HTML](#working-with-html)
     - [Making changes](#making-changes)
+- [Development plan](#development-plan)
 - [Repository tree](#repository-tree)
 
 ## How..?
@@ -96,19 +97,15 @@ The 'demo' directory contains an initial demo project model. It presents one pos
 
 To generate the demo project, in the root directory run `npm run build` or `tsc`, as described above, then `cd demo` to enter the 'demo' directory. There, with the compiled TypeScript in the 'dist' folder, it should be possible to run `node ../dist/index.js` to generate the project, followed by `npm install` to install the dependencies. Once installed, the command `node src/app.js` should start the server listening at `http://localhost:3000`.
 
-## Nowhere near done
-
-Fuller documentation, expansion of the demo project model & further improvements to follow.
-
-### Working with HTML
+## Working with HTML
 
 If you need to generate HTML, or interact with existing snippets, you could use [awb](https://github.com/barcek/awb).
 
-### Making changes
+## Making changes
 
 Running the tests after making changes and adding tests to cover new behaviour is recommended, as is a regular audit of dependencies.
 
-#### Test files
+### Test files
 
 The npm packages `mocha`, `sinon` and `ts-node` are used for testing and the test files can be run with the following command:
 
@@ -124,9 +121,20 @@ npm test
 
 The files themselves are in the 'test' folder and the `mocha` configuration file with settings to accommodate `ts-node` is in the root directory.
 
-#### npm audit
+### npm audit
 
 The `npm audit` command can be used to run a security audit on the dependencies used, with the process returning information on updates where available. The command `npm audit fix` can be used instead or thereafter to install compatible updates. See the npm documentation for [more detail](https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities).
+
+## Development plan
+
+- add comments to the remaining source files
+- expand the demo project model to include:
+    - corresponding static files
+    - optional use of TypeScript
+    - containerization
+- generalize the implementation of CLI options
+- provide a help option
+- add fuller testing
 
 ## Repository tree
 
