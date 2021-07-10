@@ -95,6 +95,22 @@ node path/to/index.js --verbose path/to/model-dir path/to/target-dir
 
 The 'demo' directory contains an initial demo project model. It presents one possible approach to the structure of the 'thru.conf.json' file and thru file resolvers and currently provides for a simple backend using Node.js with the Express.js framework, with expansion to a fuller stack solution using TypeScript to follow.
 
+### Current tree
+
+```
+demo
+├── thru
+│   ├── src
+│   │   └── app.js.thru.js
+│   ├── .env.thru.js
+│   ├── .gitignore.thru.js
+│   └── package.json.thru.js
+├── thru.conf.json
+└── thru.utils.js
+```
+
+### Generating it
+
 To generate the demo project, in the root directory run `npm run build` or `tsc`, as described above, then `cd demo` to enter the 'demo' directory. There, with the compiled TypeScript in the 'dist' folder, it should be possible to run `node ../dist/index.js` to generate the project, followed by `npm install` to install the dependencies. Once installed, the command `node src/app.js` should start the server listening at `http://localhost:3000`.
 
 ## Working with HTML
