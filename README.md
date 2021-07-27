@@ -146,7 +146,7 @@ The `npm audit` command can be used to run a security audit on the dependencies 
 
 ## Development plan
 
-The following are the expected next steps in the development of the code base. Pull requests are welcome for these and other potential improvements.
+The following are the expected next steps in the development of the code base. The general medium-term aim is an extensible CLI project generator with a comprehensive, modular demo project model. Pull requests are welcome for these and other potential improvements.
 
 - add comments to the remaining source files
 - expand the demo project model to include:
