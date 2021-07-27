@@ -14,6 +14,8 @@ Just fill a JSON file with project values, build a file tree representing the pr
     - [Generating a project](#generating-a-project)
 - [The demo project model](#the-demo-project-model)
     - [Current tree](#current-tree)
+        - [Model](#model)
+        - [Output](#output)
     - [Generating it](#generating-it)
 - [Working with HTML](#working-with-html)
 - [Making changes](#making-changes)
@@ -100,6 +102,8 @@ The 'demo' directory contains an initial demo project model. It presents one pos
 
 ### Current tree
 
+#### Model
+
 ```
 demo
 ├── thru
@@ -110,6 +114,17 @@ demo
 │   └── package.json.thru.js
 ├── thru.conf.json
 └── thru.utils.js
+```
+
+#### Output
+
+```
+./
+├── src
+│   └── app.js
+├── .env
+├── .gitignore
+└── package.json
 ```
 
 ### Generating it
