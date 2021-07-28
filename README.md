@@ -129,7 +129,27 @@ demo
 
 ### Generating it
 
-To generate the demo project, in the root directory run `npm run build` or `tsc`, as described above, then `cd demo` to enter the 'demo' directory. There, with the compiled TypeScript in the 'dist' folder, it should be possible to run `node ../dist/index.js` to generate the project, followed by `npm install` to install the dependencies. Once installed, the command `node src/app.js` should start the server listening at `http://localhost:3000`.
+To generate the demo project, in the root directory run `npm run build` or `tsc`, [as described above](#cloning-the-repository-installing-dependencies--compiling), then `cd demo` to enter the 'demo' directory.
+
+There, with the compiled TypeScript in the 'dist' folder, it should be possible to run the following command to generate the project:
+
+```shell
+node ../dist/index.js
+```
+
+Once generated, with the file 'package.json' present, run the npm command to install the project dependencies:
+
+```shell
+npm install
+```
+
+Once these have been installed, the project server can be started with the following:
+
+```shell
+node src/app.js
+```
+
+This sets it listening at `http://localhost:3000`.
 
 ## Working with HTML
 
