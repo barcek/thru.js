@@ -70,7 +70,7 @@ const mkdir = async (targetFolderPath: string, treeItem: ITreeItem): Promise<boo
             exist: 'Folder already exists.'
         };
 
-        if (err.message.slice(0, 6) !== 'EEXIST') {
+        if (err instanceof Error && err.message.slice(0, 6) !== 'EEXIST') {
             console.log(`✕ ${msgs.error} ${err} Exiting.`);
             process.exit();
         };
