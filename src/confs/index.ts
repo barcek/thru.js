@@ -5,7 +5,7 @@
 import path from 'path';
 
 import { IThruConf } from '../types/index.js';
-import { loadJSON } from '../utils/index.js';
+import { loadJSON, getFlagChecker } from '../utils/index.js';
 
 /*
     Default segments
@@ -59,7 +59,9 @@ const thruConf = await loadJSON<IThruConf>(thruConfJSONFilePath);
     Other options
 */
 
-const isVerbose = flags.findIndex(item => item === '-v' || item === '--verbose') !== -1;
+const checkFlag = getFlagChecker(flags);
+
+const isVerbose = checkFlag(['--verbose', '-v']);
 
 /*
     Exports
