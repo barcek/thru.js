@@ -161,7 +161,7 @@ Running the tests after making changes and adding tests to cover new behaviour i
 
 ### Test files
 
-The npm packages `mocha`, `sinon` and `ts-node` are used for testing and the test files can be run with the following command:
+The npm packages `mocha`, `chai`, `sinon` and `ts-node` are used for testing and the test files can be run with the following command:
 
 ```shell
 mocha
@@ -188,7 +188,7 @@ The following are the expected next steps in the development of the code base. T
     - corresponding static files
     - optional use of TypeScript
     - containerization
-- generalize the implementation of CLI options
+- further generalize the implementation of CLI options
 - provide a help option
 - add fuller testing
 
@@ -224,6 +224,7 @@ The following are the expected next steps in the development of the code base. T
 ├── test
 │   ├── generate.test.js
 │   └── test.thru.js
+│   └── utils.test.js
 ├── .gitignore
 ├── .mocharc.json
 ├── LICENSE.txt
