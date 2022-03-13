@@ -1,81 +1,81 @@
 {
 
-    "metadata": {
+  "metadata": {
 
-        "name": "thrujs-demo",
-        "vers": "1.0.0",
-        "desc": "demo project for thru.js model-driven development project generator",
-        "kWds": [
-            "thru.js",
-            "model-driven development",
-            "MDD",
-            "generator"
-        ],
-        "auth": "barcek",
-        "lcns": "MIT",
-        "repo": {
-            "type": "git",
-            "url": "https://github.com/barcek/thru.js.git"
-        }
-    },
-
-    "devTools": {
-
-        "vCtrl": "git",
-        "pMgrs": {
-            "npm": {
-                "type": "module",
-                "deps": {
-                    "express": "^4.17.1",
-                    "dotenv": "^8.2.0",
-                    "helmet": "^4.5.0"
-                }
-            }
-        }
-    },
-
-    "resources": {
-
-        "utils": "thru.utils.js"
-    },
-
-    "components": {
-
-        "appServer": {
-            "runtime": {
-                "name": "Node.js",
-                "data": {
-                    "fWrk": "express"
-                }
-            },
-            "modules": [
-                {
-                    "use": "dotenvLoading",
-                    "src": "dotenv"
-                },
-                {
-                    "src": "helmet",
-                    "mid": true
-                }
-            ]
-        }
-    },
-
-    "variables": {
-
-        "port": {
-            "src": ".env",
-            "val": "3000"
-        },
-        "info": {
-            "src": ".env",
-            "val": "hello",
-            "wrt": true
-        },
-        "user": {
-            "src": "main",
-            "val": "world",
-            "wrt": true
-        }
+    "name": "thrujs-demo",
+    "vers": "1.0.0",
+    "desc": "demo project for thru.js model-driven development project generator",
+    "kWds": [
+      "thru.js",
+      "model-driven development",
+      "MDD",
+      "generator"
+    ],
+    "auth": "barcek",
+    "lcns": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "https://github.com/barcek/thru.js.git"
     }
+  },
+
+  "devTools": {
+
+    "vCtrl": "git",
+    "pMgrs": {
+      "npm": {
+        "type": "module",
+        "deps": {
+          "express": "^4.17.1",
+          "dotenv": "^8.2.0",
+          "helmet": "^4.5.0"
+        }
+      }
+    }
+  },
+
+  "resources": {
+
+    "utils": "thru.utils.js"
+  },
+
+  "components": {
+
+    "appServer": {
+      "runtime": {
+        "name": "Node.js",
+        "data": {
+          "fWrk": "express"
+        }
+      },
+      "modules": [
+        {
+          "use": "dotenvLoading",
+          "src": "dotenv"
+        },
+        {
+          "src": "helmet",
+          "mid": true
+        }
+      ]
+    }
+  },
+
+  "variables": {
+
+    "port": {
+      "src": ".env",
+      "val": "3000"
+    },
+    "info": {
+      "src": ".env",
+      "val": "hello",
+      "wrt": true
+    },
+    "user": {
+      "src": "main",
+      "val": "world",
+      "wrt": true
+    }
+  }
 }

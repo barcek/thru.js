@@ -1,211 +1,211 @@
 /*
-    Imports
+  Imports
 */
 
 import path from 'path';
 
 /*
-    Assumptions
+  Assumptions
 */
 
 const varsRequired = [ 'port', 'info', 'user' ];
 
 const modsSupported = {
-    dotenvLoading: {
-        dotenv: {
-            run: 'dotenv.config();'
-        }
+  dotenvLoading: {
+    dotenv: {
+      run: 'dotenv.config();'
     }
+  }
 };
 
 /*
-    Resolvers - compute, import, invoke, assign, utilize, respond, listen
+  Resolvers - compute, import, invoke, assign, utilize, respond, listen
 */
 
 const resolvers = {
 
-    /*
-        Return empty if framework not Express
-        or import utils & compute values for later use,
-        throwing error if module unsupported or variable required absent
-    */
+  /*
+    Return empty if framework not Express
+    or import utils & compute values for later use,
+    throwing error if module unsupported or variable required absent
+  */
 
-    compute: async (conf, init) => {
+  compute: async (conf, init) => {
 
-        if (conf?.components?.appServer?.runtime?.data?.fWrk !== 'express') {
-            return {
-                isEmpty: 'No framework set or framework not Express.'
-            };
+    if (conf?.components?.appServer?.runtime?.data?.fWrk !== 'express') {
+      return {
+        isEmpty: 'No framework set or framework not Express.'
+      };
+    };
+
+    /* Import utils, resolving path from segments in conf & init */
+
+    const utils = await import(path.resolve(init.projectRootPath, conf.resources.utils));
+
+    /* Extract modules, check support & assign content required */
+
+    let modules = conf?.components?.appServer?.modules || [];
+
+    modules = modules.map(module => {
+      if (modsSupported[module.use] && !modsSupported[module.use][module.src]) {
+        throw new Error(`'${module.src}' unsupported for use '${module.use}'`);
+      };
+      if (modsSupported[module.use] && modsSupported[module.use][module.src]) {
+        for (let key of Object.keys(modsSupported[module.use][module.src])) {
+          module[key] = modsSupported[module.use][module.src][key];
         };
+      };
+      return module;
+    });
 
-        /* Import utils, resolving path from segments in conf & init */
+    /* Extract variables & check all required present */
 
-        const utils = await import(path.resolve(init.projectRootPath, conf.resources.utils));
+    let variables = conf?.variables || {};
 
-        /* Extract modules, check support & assign content required */
+    const varsAbsent = [];
+    for (let varRequired of varsRequired) {
+      if (!variables[varRequired] || !variables[varRequired].val) {
+        varsAbsent.push(varRequired);
+      };
+    };
+    if (varsAbsent.length > 0) {
+      throw new Error(`Variable${utils.sIfMultiple(varsAbsent)} ` +
+        `${utils.createList(utils.quoteItems(varsAbsent))} required`);
+    };
 
-        let modules = conf?.components?.appServer?.modules || [];
+    return {
+      forNext: {
+        utils,
+        modules,
+        variables
+      }
+    };
 
-        modules = modules.map(module => {
-            if (modsSupported[module.use] && !modsSupported[module.use][module.src]) {
-                throw new Error(`'${module.src}' unsupported for use '${module.use}'`);
-            };
-            if (modsSupported[module.use] && modsSupported[module.use][module.src]) {
-                for (let key of Object.keys(modsSupported[module.use][module.src])) {
-                    module[key] = modsSupported[module.use][module.src][key];
-                };
-            };
-            return module;
-        });
+  },
 
-        /* Extract variables & check all required present */
+  /* Generate lines for 'Imports' section */
 
-        let variables = conf?.variables || {};
+  import: (conf, comp) => {
 
-        const varsAbsent = [];
-        for (let varRequired of varsRequired) {
-            if (!variables[varRequired] || !variables[varRequired].val) {
-                varsAbsent.push(varRequired);
-            };
-        };
-        if (varsAbsent.length > 0) {
-            throw new Error(`Variable${utils.sIfMultiple(varsAbsent)} ` +
-                `${utils.createList(utils.quoteItems(varsAbsent))} required`);
-        };
+    const contentItems = [
+      '/*\n    Imports\n*/\n',
+      'import express from \'express\';'
+    ];
 
-        return {
-            forNext: {
-                utils,
-                modules,
-                variables
-            }
-        };
+    const furtherItems = comp.modules.reduce((acc, module) => {
+      const src = module.src;
+      src !== 'express' && acc.push(`import ${comp.utils.namePkgVar(src)} from '${src}';`);
+      return acc;
+    }, []);
 
-    },
+    contentItems.push(...furtherItems);
 
-    /* Generate lines for 'Imports' section */
+    return {
+      content: contentItems.join('\n') + '\n'
+    };
+  },
 
-    import: (conf, comp) => {
+  /* Generate lines for 'Activation' section, to call express & any other modules */
 
-        const contentItems = [
-            '/*\n    Imports\n*/\n',
-            'import express from \'express\';'
-        ];
+  invoke: (conf, comp) => {
 
-        const furtherItems = comp.modules.reduce((acc, module) => {
-            const src = module.src;
-            src !== 'express' && acc.push(`import ${comp.utils.namePkgVar(src)} from '${src}';`);
-            return acc;
-        }, []);
+    const contentItems = [
+      '/*\n    Base calls\n*/\n',
+      'const app = express();'
+    ];
 
-        contentItems.push(...furtherItems);
+    const furtherItems = comp.modules.reduce((acc, module) => {
+      module.run && acc.push(module.run);
+      return acc;
+    }, []);
 
-        return {
-            content: contentItems.join('\n') + '\n'
-        };
-    },
+    contentItems.push(...furtherItems);
 
-    /* Generate lines for 'Activation' section, to call express & any other modules */
+    return {
+      content: contentItems.join('\n') + '\n'
+    };
+  },
 
-    invoke: (conf, comp) => {
+  /* Generate lines for 'Other values' section */
 
-        const contentItems = [
-            '/*\n    Base calls\n*/\n',
-            'const app = express();'
-        ];
+  assign: (conf, comp) => {
 
-        const furtherItems = comp.modules.reduce((acc, module) => {
-            module.run && acc.push(module.run);
-            return acc;
-        }, []);
+    const contentItems = ['/*\n    Other values\n*/\n'];
 
-        contentItems.push(...furtherItems);
+    /* Include variables extracted */
 
-        return {
-            content: contentItems.join('\n') + '\n'
-        };
-    },
+    const furtherItems = Object.keys(comp.variables).reduce((acc, key) => {
+      const src = comp.variables[key]?.src;
+      const dec = comp.variables[key]?.wrt ? 'let' : 'const';
+      const id = dec === 'const' ? key.toUpperCase() : key;
+      let val = comp.variables[key]?.val;
+      val = typeof val === 'string' ? `'${val}'` : val;
+      src === '.env' && acc.push(`${dec} ${id} = process.env.${key.toUpperCase()};`)
+      src === 'main' && acc.push(`${dec} ${id} = ${val};`);
+      return acc;
+    }, []);
 
-    /* Generate lines for 'Other values' section */
+    contentItems.push(...furtherItems);
 
-    assign: (conf, comp) => {
+    /* Include remaining values */
 
-        const contentItems = ['/*\n    Other values\n*/\n'];
+    const space = contentItems.length > 1 ? '\n' : '';
+    contentItems.push(`${space}const capitalizedInfo = info.slice(0, 1).toUpperCase() + info.slice(1);`);
 
-        /* Include variables extracted */
+    return {
+      content: contentItems.join('\n') + '\n'
+    };
+  },
 
-        const furtherItems = Object.keys(comp.variables).reduce((acc, key) => {
-            const src = comp.variables[key]?.src;
-            const dec = comp.variables[key]?.wrt ? 'let' : 'const';
-            const id = dec === 'const' ? key.toUpperCase() : key;
-            let val = comp.variables[key]?.val;
-            val = typeof val === 'string' ? `'${val}'` : val;
-            src === '.env' && acc.push(`${dec} ${id} = process.env.${key.toUpperCase()};`)
-            src === 'main' && acc.push(`${dec} ${id} = ${val};`);
-            return acc;
-        }, []);
+  /* Generate lines for 'Middleware' section */
 
-        contentItems.push(...furtherItems);
+  utilize: (conf, comp) => {
 
-        /* Include remaining values */
+    const contentItems = ['/*\n    Middleware\n*/\n'];
 
-        const space = contentItems.length > 1 ? '\n' : '';
-        contentItems.push(`${space}const capitalizedInfo = info.slice(0, 1).toUpperCase() + info.slice(1);`);
+    const furtherItems = comp.modules.reduce((acc, module) => {
+      module.mid
+        && (typeof module.mid === 'string'
+          ? acc.push(module.mid)
+          : acc.push(`app.use(${comp.utils.namePkgVar(module.src)}());`));
+      return acc;
+    }, []);
 
-        return {
-            content: contentItems.join('\n') + '\n'
-        };
-    },
+    contentItems.push(...furtherItems);
 
-    /* Generate lines for 'Middleware' section */
+    return {
+      content: contentItems.length > 1 ? contentItems.join('\n') + '\n' : ''
+    };
+  },
 
-    utilize: (conf, comp) => {
+  /* Generate lines for 'Routes' section */
 
-        const contentItems = ['/*\n    Middleware\n*/\n'];
+  respond: () => {
 
-        const furtherItems = comp.modules.reduce((acc, module) => {
-            module.mid
-                && (typeof module.mid === 'string'
-                    ? acc.push(module.mid)
-                    : acc.push(`app.use(${comp.utils.namePkgVar(module.src)}());`));
-            return acc;
-        }, []);
+    const contentItems = [
+      '/*\n    Routes\n*/\n',
+      'app.get(\'/\', (req, res) => {\n'
+        + '    res.send(`${capitalizedInfo}, ${user}.`)\n'
+        + '});\n'
+    ];
 
-        contentItems.push(...furtherItems);
+    return {
+      content: contentItems.join('\n')
+    };
+  },
 
-        return {
-            content: contentItems.length > 1 ? contentItems.join('\n') + '\n' : ''
-        };
-    },
+  /* Generate lines to listen */
 
-    /* Generate lines for 'Routes' section */
+  listen: () => {
 
-    respond: () => {
+    const contentItems = [
+      'app.listen(PORT, () => {\n    console.log(`Listening on ${PORT}...`);\n});'
+    ];
 
-        const contentItems = [
-            '/*\n    Routes\n*/\n',
-            'app.get(\'/\', (req, res) => {\n'
-                + '    res.send(`${capitalizedInfo}, ${user}.`)\n'
-                + '});\n'
-        ];
-
-        return {
-            content: contentItems.join('\n')
-        };
-    },
-
-    /* Generate lines to listen */
-
-    listen: () => {
-
-        const contentItems = [
-            'app.listen(PORT, () => {\n    console.log(`Listening on ${PORT}...`);\n});'
-        ];
-
-        return {
-            content: contentItems.join('\n')
-        };
-    }
+    return {
+      content: contentItems.join('\n')
+    };
+  }
 };
 
 export default resolvers;

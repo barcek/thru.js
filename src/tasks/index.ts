@@ -1,32 +1,32 @@
 /*
-    Imports
+  Imports
 */
 
 import confs from '../confs/index.js';
 import generate from './generate.js';
 
 /*
-    Tasks
+  Tasks
 */
 
 const tasks: Record<string, () => Promise<void>> = {
-    generate: async function() {
-        confs.isVerbose && console.log('Generating...');
-        await generate(confs);
-    }
+  generate: async function() {
+    confs.isVerbose && console.log('Generating...');
+    await generate(confs);
+  }
 };
 
 /*
-    Runner
+  Runner
 */
 
 const run = async (task: string): Promise<void> => {
-    await tasks[task]();
-    confs.isVerbose && console.log('Done.');
+  await tasks[task]();
+  confs.isVerbose && console.log('Done.');
 };
 
 /*
-    Export
+  Export
 */
 
 export default run;

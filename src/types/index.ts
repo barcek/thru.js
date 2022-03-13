@@ -1,49 +1,49 @@
 /*
-    Abstracted directory entry
+  Abstracted directory entry
 */
 
 interface ITreeItem {
-    path: string;
-    type: string;
-    dir?: ITreeItem[];
+  path: string;
+  type: string;
+  dir?: ITreeItem[];
 };
 
 /*
-    Config file content & full or partial paths
+  Config file content & full or partial paths
 */
 
 interface IThruConf {
-    [key: string]: any;
+  [key: string]: any;
 };
 
 interface IConfs {
-    thruRootPath: string;
-    projectRootPath: string;
-    thruConf: IThruConf;
-    thruFileInfix: string;
-    isVerbose: boolean;
+  thruRootPath: string;
+  projectRootPath: string;
+  thruConf: IThruConf;
+  thruFileInfix: string;
+  isVerbose: boolean;
 };
 
 /*
-    Thru file resolvers & resolver return values
+  Thru file resolvers & resolver return values
 */
 
 interface IThruFile {
-    [key: string]: () => any;
+  [key: string]: () => any;
 };
 
 interface IThruVals {
-    [key: string]: any;
+  [key: string]: any;
 };
 
 /*
-    Exports
+  Exports
 */
 
 export {
-    ITreeItem,
-    IThruConf,
-    IConfs,
-    IThruFile,
-    IThruVals
+  ITreeItem,
+  IThruConf,
+  IConfs,
+  IThruFile,
+  IThruVals
 };

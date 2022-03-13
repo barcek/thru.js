@@ -1,5 +1,5 @@
 /*
-    Imports
+  Imports
 */
 
 import path from 'path';
@@ -8,7 +8,7 @@ import { IThruConf } from '../types/index.js';
 import { loadJSON, getFlagChecker } from '../utils/index.js';
 
 /*
-    Default segments
+  Default segments
 */
 
 let thruRoot: string = './thru';
@@ -18,7 +18,7 @@ const thruConfJSONFile: string = 'thru.conf.json';
 const thruFileInfix = '.thru';
 
 /*
-    Argument separation
+  Argument separation
 */
 
 const args: string[] = process.argv.slice(2);
@@ -27,19 +27,19 @@ const paths = args.filter(item => item[0] !== '-');
 const flags = args.filter(item => item[0] === '-');
 
 /*
-    Segment arguments
+  Segment arguments
 */
 
 if (paths[0]) {
-    thruRoot = paths[0];
+  thruRoot = paths[0];
 };
 
 if (paths[1]) {
-    projectRoot = paths[1];
+  projectRoot = paths[1];
 };
 
 /*
-    Path resolutions
+  Path resolutions
 */
 
 const PWD: string = process.env.PWD || './';
@@ -50,13 +50,13 @@ const projectRootPath: string = path.resolve(PWD, projectRoot);
 const thruConfJSONFilePath: string = path.resolve(projectRoot, thruConfJSONFile);
 
 /*
-    Conf file loading
+  Conf file loading
 */
 
 const thruConf = await loadJSON<IThruConf>(thruConfJSONFilePath);
 
 /*
-    Other options
+  Other options
 */
 
 const checkFlag = getFlagChecker(flags);
@@ -64,13 +64,13 @@ const checkFlag = getFlagChecker(flags);
 const isVerbose = checkFlag(['--verbose', '-v']);
 
 /*
-    Exports
+  Exports
 */
 
 export default {
-    thruRootPath,
-    projectRootPath,
-    thruConf,
-    thruFileInfix,
-    isVerbose
+  thruRootPath,
+  projectRootPath,
+  thruConf,
+  thruFileInfix,
+  isVerbose
 };

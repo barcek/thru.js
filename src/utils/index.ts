@@ -1,5 +1,5 @@
 /*
-    Exports
+  Exports
 */
 
 export * from './file.js';

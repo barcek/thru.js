@@ -1,5 +1,5 @@
 /*
-    Imports
+  Imports
 */
 
 import path from 'path';
@@ -8,100 +8,146 @@ import { ITreeItem } from '../types/index.js';
 import { quoteItems, createList, sIfMultiple } from './index.js';
 
 /*
-    Tree utils
+  Tree utils
 */
 
 const hasOwnDir = (treeItem: ITreeItem): boolean => {
-    return (treeItem.dir && treeItem.dir.length > 0) || false;
+  return (treeItem.dir && treeItem.dir.length > 0) || false;
 };
 
 const getBasenames = (treeItems: Array<ITreeItem>): string[] => {
-    return treeItems.map(treeItem => path.basename(treeItem.path));
+  return treeItems.map(treeItem => path.basename(treeItem.path));
 };
 
 const listContents = (folderName: string, treeItems: Array<ITreeItem>): string => {
 
-    const { folders, files } = separateContents({ folders: [], files: [] })(treeItems);
+  const { folders, files } = separateContents({ folders: [], files: [] })(treeItems);
 
-    if (folders.length === 0 && files.length === 0) {
-        return '';
-    };
+  if (folders.length === 0 && files.length === 0) {
+    return '';
+  };
 
-    const folderPassage = folders.length > 0
-        ? `folder${sIfMultiple(folders)} ${createList(quoteItems(getBasenames(folders)))}`
-        : '';
-    const filePassage = files.length > 0
-        ? `file${sIfMultiple(files)} ${createList(quoteItems(getBasenames(files)))}`
-        : '';
-    const conj = folders.length > 0 && files.length > 0 ? ' & ' : '';
+  const folderPassage = folders.length > 0
+    ? `folder${sIfMultiple(folders)} ${createList(quoteItems(getBasenames(folders)))}`
+    : '';
+  const filePassage = files.length > 0
+    ? `file${sIfMultiple(files)} ${createList(quoteItems(getBasenames(files)))}`
+    : '';
+  const conj = folders.length > 0 && files.length > 0 ? ' & ' : '';
 
-    return `${folderName} contains ` + folderPassage + conj + filePassage + '.';
+  return `${folderName} contains ` + folderPassage + conj + filePassage + '.';
 };
 
+//const filterTree:
+//
+//    (filter: (treeItem: ITreeItem) => boolean) =>
+//    (treeItems: Array<ITreeItem>) => Array<ITreeItem>
+//
+//    = filter => treeItems => {
+//
+//    return treeItems.filter(treeItem => {
+//
+//        if (!treeItem.dir || treeItem.dir.length === 0) {
+//            return filter(treeItem);
+//        };
+//
+//        return filterTree(filter)(treeItem.dir);
+//    });
+//};
+
+//const mapTree:
+//
+//    (mapper: (treeItem: ITreeItem) => any) =>
+//    (treeItems: Array<ITreeItem>) => Array<ITreeItem>
+//
+//    = mapper => treeItems => {
+//
+//    return treeItems.map(treeItem => {
+//
+//        if (!treeItem.dir || treeItem.dir.length === 0) {
+//            return mapper(treeItem);
+//        };
+//
+//        return mapTree(mapper)(treeItem.dir);
+//    });
+//};
+
+//const testDir = await readTree('./thru');
+//const filter = (treeItem: ITreeItem) => treeItem.type === 'folder';
+//const mapper = (treeItem: ITreeItem) => treeItem.path.replace('thru/', '').replace('.thru', ''). replace(/.js$/, '');
+//const reducer1 = (acc: any, treeItem: ITreeItem) => treeItem.type === 'file' ? [ acc, treeItem.path].join('\n') : acc;
+//console.log(filterTree(filter)(testDir));
+//console.log(mapTree(mapper)(testDir));
+//console.log(reduceTree(reducer1)([])(testDir));
+
 /*
-    - reduceTree
+  - reduceTree
 */
 
 const reduceTree:
 
-    (reducer: (acc: any, treeItem: ITreeItem) => any) =>
-    (initial: any) =>
-    (treeItems: Array<ITreeItem>) => any
+  (reducer: (acc: any, treeItem: ITreeItem) => any) =>
+  (initial: any) =>
+  (treeItems: Array<ITreeItem>) => any
 
-    = reducer => initial => treeItems => {
+  = reducer => initial => treeItems => {
 
-    return treeItems.reduce((acc, treeItem) => {
+  return treeItems.reduce((acc, treeItem) => {
 
-        acc = reducer(acc, treeItem)
+    acc = reducer(acc, treeItem)
 
-        if (!hasOwnDir(treeItem)) {
-            return acc;
-        };
+    if (!hasOwnDir(treeItem)) {
+      return acc;
+    };
 
-        return reduceTree(reducer)(acc)(treeItem.dir as Array<ITreeItem>);
+    return reduceTree(reducer)(acc)(treeItem.dir as Array<ITreeItem>);
 
-    }, initial);
+  }, initial);
 };
 
-//  - reducers
+/*
+  - reducers
+*/
 
 const assignTreeItem = (acc: Record<string, ITreeItem[]>, treeItem: ITreeItem): Record<string, ITreeItem[]> => {
-    treeItem.type === 'folder' && acc.folders.push(treeItem);
-    treeItem.type === 'file' && acc.files.push(treeItem);
-    return acc;
+  treeItem.type === 'folder' && acc.folders.push(treeItem);
+  treeItem.type === 'file' && acc.files.push(treeItem);
+  return acc;
 };
 
-//  - partials
+/*
+  - partials
+*/
 
 const separateContents = reduceTree(assignTreeItem);
 
 /*
-    - handleTree
+  - handleTree
 */
 
 const handleTree:
 
-    (handler: (treeItem: ITreeItem) => void) =>
-    (treeItems: Array<ITreeItem>) => Promise<void>
+  (handler: (treeItem: ITreeItem) => void) =>
+  (treeItems: Array<ITreeItem>) => Promise<void>
 
-    = handler => async treeItems => {
+  = handler => async treeItems => {
 
-    for (let treeItem of treeItems) {
+  for (let treeItem of treeItems) {
 
-        await handler(treeItem);
+    await handler(treeItem);
 
-        if (hasOwnDir(treeItem)) {
-            await handleTree(handler)(treeItem.dir as Array<ITreeItem>);
-        };
+    if (hasOwnDir(treeItem)) {
+      await handleTree(handler)(treeItem.dir as Array<ITreeItem>);
     };
+  };
 };
 
 /*
-    Exports
+  Exports
 */
 
 export {
-    hasOwnDir, getBasenames, listContents,
-    reduceTree, separateContents,
-    handleTree
+  hasOwnDir, getBasenames, listContents,
+  reduceTree, separateContents,
+  handleTree
 };
