@@ -6,6 +6,7 @@ import path from 'path';
 import { promises as fs, Dirent } from 'fs';
 
 import { ITreeItem } from '../types/index.js';
+import confs from '../confs/index.js';
 import { hasOwnDir, listContents, reduceTree, confirmProceed } from './index.js';
 
 /*
@@ -82,6 +83,8 @@ const mkdir = async (targetFolderPath: string, treeItem: ITreeItem): Promise<boo
       );
       return false;
     };
+
+    if (confs.doReplace) return false;
 
     const targetDirItems: Array<Dirent> = await fs.readdir(targetFolderPath, { withFileTypes: true});
     const targetTreeItems = formatAsTreeItems(targetFolderPath, targetDirItems);

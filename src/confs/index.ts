@@ -62,6 +62,7 @@ const thruConf = await loadJSON<IThruConf>(thruConfJSONFilePath);
 const checkFlag = getFlagChecker(flags);
 
 const isVerbose = checkFlag(['--verbose', '-v']);
+const doReplace = checkFlag(['--replace', '-r']);
 
 /*
   Exports
@@ -72,5 +73,6 @@ export default {
   projectRootPath,
   thruConf,
   thruFileInfix,
-  isVerbose
+  isVerbose,
+  doReplace
 };
