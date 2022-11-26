@@ -2,12 +2,12 @@
   Imports
 */
 
-import path from 'path';
-import { promises as fs } from 'fs';
+import path from 'path'
+import { promises as fs } from 'fs'
 
-import sinon from 'sinon';
+import sinon from 'sinon'
 
-import generate from '../src/tasks/generate.ts';
+import generate from '../src/tasks/generate.ts'
 
 /*
   Test values
@@ -15,9 +15,9 @@ import generate from '../src/tasks/generate.ts';
    - confs
 */
 
-const thruRootPath = path.resolve('test');
-const projectRootPath = path.resolve('test/project');
-const thruConf = { testKey: 'testValue' };
+const thruRootPath = path.resolve('test')
+const projectRootPath = path.resolve('test/project')
+const thruConf = { testKey: 'testValue' }
 
 const confs = {
 
@@ -26,7 +26,7 @@ const confs = {
   thruConf,
   thruFileInfix: '.thru',
   isVerbose: false
-};
+}
 
 /*
    - tree
@@ -38,7 +38,7 @@ const names = {
   thruFile: 'test.thru.js', // present in test folder - dynamic import not stubbed
   thruFileBase: 'test',
   folder: 'folder',
-};
+}
 
 const items = [
 
@@ -76,7 +76,7 @@ const items = [
       }
     ]
   }
-];
+]
 
 /*
   Stubs
@@ -85,13 +85,13 @@ const items = [
 const getItems = root => {
 
   if (root === thruRootPath) { // is top-level
-    return items;
-  };
+    return items
+  }
   if (root == items[2].pathRoot) { // is nested
-    return items[2].items;
-  };
-  return [];
-};
+    return items[2].items
+  }
+  return []
+}
 
 const getStubs = () => {
 
@@ -100,12 +100,12 @@ const getStubs = () => {
     writeFile: sinon.stub(fs, 'writeFile').callsFake((path, content) => {}),
     copyFile: sinon.stub(fs, 'copyFile').callsFake((srcPath, destPath) => {}),
     mkdir: sinon.stub(fs, 'mkdir').callsFake(path => {})
-  };
-};
+  }
+}
 
 afterEach(() => {
-  sinon.restore();
-});
+  sinon.restore()
+})
 
 /*
   Assertions
@@ -115,20 +115,20 @@ describe('generate', () => {
 
   it('generates a project (reads a directory, imports a thru file and creates items)', async () => {
 
-    const stubs = getStubs();
-    await generate(confs);
+    const stubs = getStubs()
+    await generate(confs)
 
     /* reads a thru directory - fs method stubbed */
-    sinon.assert.calledWith(stubs.readdir, thruRootPath, { withFileTypes: true });
+    sinon.assert.calledWith(stubs.readdir, thruRootPath, { withFileTypes: true })
 
     /* copies a non-thru file - fs method stubbed */
-    sinon.assert.calledWith(stubs.copyFile, items[0].pathSrc, items[0].pathDest);
+    sinon.assert.calledWith(stubs.copyFile, items[0].pathSrc, items[0].pathDest)
 
     /* writes a thru file (dynamically imported) - fs method stubbed */
-    sinon.assert.calledWith(stubs.writeFile, items[1].pathDest, thruConf.testKey);
+    sinon.assert.calledWith(stubs.writeFile, items[1].pathDest, thruConf.testKey)
 
     /* creates a folder and copies a nested non-thru file - fs methods stubbed */
-    sinon.assert.calledWith(stubs.mkdir, items[2].pathDest);
-    sinon.assert.calledWith(stubs.copyFile, items[2].items[0].pathSrc, items[2].items[0].pathDest);
-  });
-});
+    sinon.assert.calledWith(stubs.mkdir, items[2].pathDest)
+    sinon.assert.calledWith(stubs.copyFile, items[2].items[0].pathSrc, items[2].items[0].pathDest)
+  })
+})

@@ -6,7 +6,7 @@ interface ITreeItem {
   path: string;
   type: string;
   dir?: ITreeItem[];
-};
+}
 
 /*
   Config file content & full or partial paths
@@ -14,7 +14,7 @@ interface ITreeItem {
 
 interface IThruConf {
   [key: string]: any;
-};
+}
 
 interface IConfs {
   thruRootPath: string;
@@ -22,7 +22,7 @@ interface IConfs {
   thruConf: IThruConf;
   thruFileInfix: string;
   isVerbose: boolean;
-};
+}
 
 /*
   Thru file resolvers & resolver return values
@@ -30,11 +30,11 @@ interface IConfs {
 
 interface IThruFile {
   [key: string]: () => any;
-};
+}
 
 interface IThruVals {
   [key: string]: any;
-};
+}
 
 /*
   Exports
@@ -46,4 +46,4 @@ export {
   IConfs,
   IThruFile,
   IThruVals
-};
+}

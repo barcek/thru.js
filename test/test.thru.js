@@ -1,3 +1,3 @@
 export default {
-  test: conf => { return { content: conf.testKey }; }
-};
+  test: conf => { return { content: conf.testKey } }
+}
