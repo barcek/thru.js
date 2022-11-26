@@ -119,7 +119,7 @@ const handleThruFile = async (treeItem: ITreeItem, confs: IConfs): Promise<void>
 
 const handleFolder = async (treeItem: ITreeItem, confs: IConfs): Promise<void> => {
   const destFolderPath = getDestPath(confs, treeItem.path)
-  await utils.mkdir(destFolderPath, treeItem) && confs.isVerbose
+  await utils.mkdir(destFolderPath, treeItem, confs) && confs.isVerbose
     && console.log(`✓ ${treeItem.path} --> ${destFolderPath}`)
 }
 

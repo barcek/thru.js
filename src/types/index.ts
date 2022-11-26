@@ -22,6 +22,7 @@ interface IConfs {
   thruConf: IThruConf;
   thruFileInfix: string;
   isVerbose: boolean;
+  doReplace: boolean;
 }
 
 /*

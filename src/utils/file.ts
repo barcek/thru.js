@@ -5,8 +5,7 @@
 import path from 'path'
 import { promises as fs, Dirent } from 'fs'
 
-import { ITreeItem } from '../types/index.js'
-import confs from '../confs/index.js'
+import { IConfs, ITreeItem } from '../types/index.js'
 import { hasOwnDir, listContents, reduceTree, confirmProceed } from './index.js'
 
 /*
@@ -56,7 +55,7 @@ const importFile = async (targetFilePath: string): Promise<any> => {
   return await import(targetFilePath)
 }
 
-const mkdir = async (targetFolderPath: string, treeItem: ITreeItem): Promise<boolean> => {
+const mkdir = async (targetFolderPath: string, treeItem: ITreeItem, confs?: IConfs): Promise<boolean> => {
 
   try {
     await fs.mkdir(targetFolderPath)
@@ -83,7 +82,7 @@ const mkdir = async (targetFolderPath: string, treeItem: ITreeItem): Promise<boo
       return false
     }
 
-    if(confs.doReplace) return false
+    if(confs && confs.doReplace) return false
 
     const targetDirItems: Array<Dirent> = await fs.readdir(targetFolderPath, { withFileTypes: true})
     const targetTreeItems = formatAsTreeItems(targetFolderPath, targetDirItems)
