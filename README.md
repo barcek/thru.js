@@ -12,6 +12,7 @@ Just fill a JSON file with project values, build a file tree representing the pr
 - [Getting started](#getting-started)
     - [Cloning the repository, installing dependencies & compiling](#cloning-the-repository-installing-dependencies--compiling)
     - [Generating a project](#generating-a-project)
+    - [Options](#options)
 - [The demo project model](#the-demo-project-model)
     - [Current tree](#current-tree)
         - [Model](#model)
@@ -95,6 +96,13 @@ The tool logs to the console any notes and errors. It will also log progress mes
 ```shell
 node path/to/index.js --verbose path/to/model-dir path/to/target-dir
 ```
+
+### Options
+
+The following can be passed to src/index.js:
+
+- `--verbose` / `-v`, to log progess messages
+- `--replace` / `-r`, to replace automatically, not request confirmation, when a folder exists and files within may be overwritten
 
 ## The demo project model
 
