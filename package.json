@@ -1,6 +1,6 @@
 {
   "name": "thru.js",
-  "version": "1.8.5",
+  "version": "1.9.2",
   "description": "model-driven development project generator",
   "main": "index.js",
   "type": "module",
